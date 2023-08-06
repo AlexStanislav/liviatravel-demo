@@ -188,7 +188,7 @@ app.post('/imageOffers', imageUpload.single("offerImage"), (req, res) => {
 // app.get("/seedDB", async (req, res) => {
 //     let file = JSON.parse(fs.readFileSync(__dirname + '/demo_offers.json'));
 //     file.forEach(async (offer) => {
-//         offer.img = "http://localhost:3000/images/chuttersnap-JH0wCegJsrQ-unsplash.jpg";
+//         offer.img = "https://liviatour-demo.onrender.com/images/chuttersnap-JH0wCegJsrQ-unsplash.jpg";
 //         await process.postgresql.query("INSERT INTO offers (title, description, price, location, details, img, country) VALUES ($1, $2, $3, $4, $5, $6, $7)", [offer["Titlu"], offer["Descriere"], offer["Pret"], offer["Locatie"], offer["Detalii"], offer.img, offer["Tara"]]);
 //     });
 
