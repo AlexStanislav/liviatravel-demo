@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 400;
+    font-display: auto;
+    unicode-range: U+00-52F, U+1E00-1FFF, U+2200-22FF;
+    src: local('Montserrat'), url("/fonts/Montserrat-VariableFont_wght.ttf") format("truetype");
+}
+
+body, html{
+    background-color: var(--surface-0);
+    /* font-family: var(--font-family); */
+    font-family: "Montserrat";
+}
