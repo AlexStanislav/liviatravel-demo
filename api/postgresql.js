@@ -10,7 +10,7 @@ module.exports = (callback = null) => {
         password: 'YQtvKYFdhhfpaw27GBFqB6Z5YMfCGjnv',
         database: 'offers_yy98',
         port: 5432,
-        host: '127.0.0.1',
+        host: 'dpg-cj7k5kcl975s738a8cm0-a',
     });
 
     const connection = {
