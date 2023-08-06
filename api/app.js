@@ -139,7 +139,7 @@ app.get('/rezervations', async (req, res) => {
 
 app.post('/newRezervation', async (req, res) => {
     try {
-        const { firstName, lastName, email, phone, adults, rooms, children, date, offerName, offerPrice, offerDuration } = req.body;
+        const { firstName, lastName, email, phone, adults, rooms, children, date, offerName, offerDuration, } = req.body;
         const disabledDatesArray = DATE_UTILS.dateRanges(DATE_UTILS.startDate(date, true), DATE_UTILS.endDate(date, true));
         const people = parseInt(adults, 10) + parseInt(children, 10);
         const disabledDates = disabledDatesArray.join(",");
@@ -150,7 +150,7 @@ app.post('/newRezervation', async (req, res) => {
         let newAvailable = parseInt(offer[0].available, 10) - parseInt(people, 10);
 
 
-        await process.postgresql.query(`INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`, [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates]);
+        await process.postgresql.query(`INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates]);
         await process.postgresql.query(`UPDATE offers SET available = $1 WHERE title = $2`, [newAvailable, offerName]);
 
 
