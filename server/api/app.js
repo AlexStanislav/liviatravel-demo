@@ -4,15 +4,26 @@ const app = express();
 const postgresql = require('./postgresql');
 const multer = require('multer');
 const fs = require('fs');
+const path = require('path');
 
 postgresql();
 
 app.use(express.static('public'));
+app.use(express.static('dashboard'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/images', express.static('images'));
 
+
+// app.get('/login', async (req, res) => {
+//     res.sendFile(path.resolve(__dirname, '../dashboard/login/index.html'))
+// })
+
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../dashboard/index.html'))
+})
 
 const DATE_UTILS = {
     startDate: (dateInput, format = false) => {
