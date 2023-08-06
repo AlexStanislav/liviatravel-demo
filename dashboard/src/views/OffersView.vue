@@ -232,11 +232,6 @@ const deleteOffer = (offer) => {
 };
 
 const formatOffer = (offer) => {
-  let date = new Date(offer.date);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear());
-  const offerDate = `${day}/${month}/${year}`;
   let finalDetails = ""
 
   for (const iterator of detailValue.value) {
@@ -249,10 +244,9 @@ const formatOffer = (offer) => {
     price: offer.price,
     location: offer.location,
     country: offer.country,
-    rooms: offer.rooms,
-    adults: offer.adults,
-    children: offer.children,
-    date: offerDate,
+    rating: offer.rating,
+    duration: offer.duration,
+    available: offer.available,
     details: finalDetails,
     img: offer.img,
   };

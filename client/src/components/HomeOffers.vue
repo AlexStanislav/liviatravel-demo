@@ -44,7 +44,7 @@ const specialOffer = ref({})
 const offers = ref([]);
 
 setTimeout(() => {
-  specialOffer.value = store.offers[8];
+  specialOffer.value = store.offers[0];
 
   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
 
@@ -120,6 +120,11 @@ function showRezervationDialog(offer) {
     flex-flow: column;
     position: relative;
     z-index: 2;
+    p{
+      height: 100px;
+      overflow: hidden;
+      text-emphasis: ellipsis;
+    }
   }
   .offer-details {
     display: flex;

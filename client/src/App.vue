@@ -19,8 +19,8 @@
           />
         </span> -->
         <router-link to="/oferte">Oferte</router-link>
-        <a href="#">Contact</a>
-        <a href="#">Solicita Oferta</a>
+        <router-link to="/contact">Contact</router-link>
+        <router-link to="/solicitare">Solicita Oferta</router-link>
       </nav>
     </header>
     <main>
@@ -284,7 +284,7 @@ footer {
   width: 100%;
   height: 100%;
   position: absolute;
-  z-index: 100;
+  z-index: 200;
   top: 0;
   left: 0;
   background: #fff;

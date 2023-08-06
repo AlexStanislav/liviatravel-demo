@@ -65,7 +65,7 @@ nav {
     text-align: center;
     text-decoration: none;
     color: var(--text-color);
-    font-size: 0.9rem;
+    font-size: 0.9vw;
     padding: 0.5rem 0;
     display: flex;
     justify-content: space-between;

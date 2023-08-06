@@ -99,11 +99,24 @@ setRating();
   }
 }
 
+.p-card-content {
+  height: 130px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .price-text {
   font-size: 0.7rem;
   text-align: right;
   color: var(--gray-600);
   font-style: italic;
+}
+
+
+.price-specification {
+  font-size: 0.8rem;
+  text-align: right;
+  color: var(--color-3);
 }
 
 .price-value{

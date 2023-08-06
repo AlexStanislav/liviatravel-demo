@@ -29,6 +29,7 @@
       <Column field="email" sortable header="Email"></Column>
       <Column field="phone" sortable header="Telefon"></Column>
       <Column field="people" sortable header="Persoane"></Column>
+      <Column field="rooms" sortable header="Camere"></Column>
       <Column field="offer_duration" sortable header="Durata"></Column>
       <Column field="offer_price" sortable header="Pret Oferta"></Column>
       <Column field="offer_name" sortable header="Nume Oferta"></Column>

@@ -133,7 +133,7 @@ watch(starsFilterValue, () => {
 
   tempArr.some((value) => {
     if (parseInt(value, 10) !== 0) {
-      filteredOffers.value = filteredOffers.value.filter((offer) => {
+      filteredOffers.value = store.offers.filter((offer) => {
         if (offer.rating !== null) {
           return offer.rating.toString().includes(value);
         }
@@ -142,6 +142,20 @@ watch(starsFilterValue, () => {
       filteredOffers.value = store.offers;
     }
   });
+});
+
+watch(countryFilterValue, () => {
+  let tempArr = [];
+  if(countryFilterValue.value === "0"){
+    filteredOffers.value = store.offers;
+  }else{
+    for (const offer of store.offers) {
+      if(offer.country === countryFilterValue.value){
+        tempArr.push(offer);
+      }
+    }
+    filteredOffers.value = tempArr;
+  }
 });
 
 </script>
