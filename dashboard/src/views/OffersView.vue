@@ -20,11 +20,13 @@
           <Button
             icon="pi pi-plus"
             class="p-button-success"
+            label="Creeaza oferta"
             @click="createOfferVisible = true"
           />
           <Button
             icon="pi pi-refresh"
             class="p-button-warning"
+            label="Actualizeaza tabelul"
             @click="getOffers()"
           />
           <!-- <FileUpload mode="basic" name="offers" :url="`${url}/textOffers`" accept="text/*"  @upload="uploadOffers" /> -->
@@ -98,7 +100,11 @@
             </span>
             <span class="p-float-label p-input-icon-left">
               <i class="pi pi-users"></i>
-              <InputText id="adults" type="number" v-model="newOffer.available" />
+              <InputText
+                id="adults"
+                type="number"
+                v-model="newOffer.available"
+              />
               <label for="adults">Locuri</label>
             </span>
           </div>
@@ -124,12 +130,19 @@
         </div>
         <div class="form-column-details">
           <h5>Facilitati</h5>
-          <div class="details-container" v-for="(detail, index) in detailType" :key="index">
+          <div
+            class="details-container"
+            v-for="(detail, index) in detailType"
+            :key="index"
+          >
             <Checkbox v-model="detailValue" :value="detail.label" />
             <label for="facilitatiCopii">{{ detail.label }}</label>
           </div>
+          <div class="image-preview">
+            <img :src="imagePreview" />
+          </div>
         </div>
-        <div class="form-column">
+        <div class="form-column form-image">
           <label for="img">Imagine</label>
           <input id="img" type="file" accept="image/*" @input="createIMGURL" />
         </div>
@@ -182,7 +195,7 @@ const detailType = [
   { label: "Park Acvatic" },
 ];
 
-const detailValue = ref()
+const detailValue = ref();
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -203,10 +216,13 @@ const url =
     ? "http://localhost:3000"
     : window.location.origin;
 const imageFile = ref(null);
+const imagePreview = ref("");
 
 const createIMGURL = (e) => {
   imageFile.value = e.target.files[0];
-  newOffer.value.img = `${url}/images/${imageFile.value.name}`;
+  let imgURL = `${url}/images/${imageFile.value.name}`;
+  newOffer.value.img = imgURL;
+  imagePreview.value = imgURL;
 };
 
 onMounted(() => {
@@ -232,10 +248,10 @@ const deleteOffer = (offer) => {
 };
 
 const formatOffer = (offer) => {
-  let finalDetails = ""
+  let finalDetails = "";
 
   for (const iterator of detailValue.value) {
-    finalDetails += iterator + ", "
+    finalDetails += iterator + ", ";
   }
 
   return {
@@ -307,7 +323,7 @@ const saveOffer = (e) => {
       width: 10vw;
     }
 
-    .form-row{
+    .form-row {
       display: flex;
       gap: 1rem;
     }
@@ -327,6 +343,23 @@ const saveOffer = (e) => {
     #details {
       min-height: 5rem;
     }
+  }
+}
+
+.form-column-details {
+  position: relative;
+  height: 40vh;
+  .image-preview {
+    overflow: hidden;
+    object-fit: contain;
+    object-position: center;
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
   }
 }
 
