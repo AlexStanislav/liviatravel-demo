@@ -126,4 +126,13 @@ const zoom = ref(18);
   position: relative;
   z-index: 1;
 }
+
+@media screen and (max-width: 1366px) {
+  .contact-container {
+    justify-content: center;
+  }
+  .info-container{
+    width: 100%;
+  }
+}
 </style>

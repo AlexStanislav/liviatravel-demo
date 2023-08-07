@@ -232,4 +232,13 @@ watch(countryFilterValue, () => {
   font-size: 1.5rem;
   color: var(--color-2);
 }
+
+@media screen and (max-width: 1366px) {
+  .offers-wrapper {
+    justify-content: center;
+  }
+  .offers-sidebar {
+    width: 20%;
+  }
+}
 </style>

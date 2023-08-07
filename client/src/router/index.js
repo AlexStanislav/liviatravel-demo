@@ -23,6 +23,11 @@ const router = createRouter({
             path: '/solicitare',
             name: 'request',
             component: () => import('../views/RequestView.vue')
+        },
+        {
+            path: '/oferta',
+            name: 'offer',
+            component: () => import('../views/OfferView.vue')
         }
     ]
 })
@@ -30,11 +35,19 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const appStore = useAppStore()
-    appStore.togglePreloader();
-    next()
-    setTimeout(() => {
+    if (to.name == 'offer' && !appStore.rezervationOffer) {
         appStore.togglePreloader();
-    }, 1000)
+        next('/oferte')
+        setTimeout(() => {
+            appStore.togglePreloader();
+        }, 1000)
+    } else {
+        appStore.togglePreloader();
+        next()
+        setTimeout(() => {
+            appStore.togglePreloader();
+        }, 1000)
+    }
 })
 
 export default router

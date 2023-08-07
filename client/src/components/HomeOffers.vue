@@ -5,7 +5,7 @@
         <h4 class="ribbon">Oferta Zilei!</h4>
         <div class="special-offer-info">
           <div class="bg"></div>
-          <div class="offer-info">
+          <div class="special-offer-details">
             <h1>{{ specialOffer.title }}</h1>
             <h2>{{ specialOffer.country }}</h2>
             <h5>{{ specialOffer.location }}</h5>
@@ -17,7 +17,7 @@
             <div class="special-offer-price">
               <div>
                 {{ parseFloat(specialOffer.price).toLocaleString("ro-RO")  }} 
-                <span class="currency">RON</span>
+                <span class="currency">&euro;</span>
               </div>
               <div class="price-specification">{{ specialOffer.duration }} nopti</div>
             </div>
@@ -115,7 +115,7 @@ function showRezervationDialog(offer) {
     border: 1px solid var(--color-5) !important;
     color: var(--color-2) !important;
   }
-  .offer-info{
+  .special-offer-details{
     display: flex;
     flex-flow: column;
     position: relative;

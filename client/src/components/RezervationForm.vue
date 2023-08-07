@@ -95,7 +95,7 @@
         </tr>
         <tr>
           <td class="table-label">Pret:</td>
-          <td>${{ calculatedPrice() }}</td>
+          <td>{{ calculatedPrice() }} &euro;</td>
         </tr>
         <tr>
           <td class="table-label">Locuri Disponibile</td>

@@ -14,7 +14,7 @@
       {{ offer.description }}
     </template>
     <template #footer>
-      <Button label="Rezervă" @click="showRezervationDialog(offer)"/>
+      <Button label="Vezi Oferta" @click="showOffer(offer)"/>
       <div class="offer-price">
         <div class="offer-price-container">
           <div class="price-text">Incepand de la</div>
@@ -35,6 +35,7 @@ import Button from "primevue/button";
 import Rating from "primevue/rating";
 import { useAppStore } from "../store/app";
 import { ref } from "vue";
+import router from "../router";
 
 const store = useAppStore();
 
@@ -50,9 +51,9 @@ const props = defineProps({
 
 let intRating = ref(0)
 
-function showRezervationDialog(offer) {
-  store.setRezervationVisible(true);
+function showOffer(offer) {
   store.setOffer(offer);
+  router.push({ name: "offer" });
 }
 
 function setRating() {
