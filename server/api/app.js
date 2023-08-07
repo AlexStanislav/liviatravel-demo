@@ -150,7 +150,7 @@ app.post('/newRezervation', async (req, res) => {
         let newAvailable = parseInt(offer[0].available, 10) - parseInt(people, 10);
 
 
-        await process.postgresql.query(`INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates]);
+        await process.postgresql.query(`INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates, rooms]);
         await process.postgresql.query(`UPDATE offers SET available = $1 WHERE title = $2`, [newAvailable, offerName]);
 
 
