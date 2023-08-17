@@ -1,0 +1,1 @@
+import{o as s,c as o,b as t,t as a}from"./index-6d752bde.js";const c={class:"offers-title"},i=t("div",{class:"offers-title-bg"},null,-1),r={class:"offers-title-text"},f={__name:"Title",props:{text:{type:String,default:""}},setup(e){return(l,n)=>(s(),o("div",c,[i,t("div",r,a(e.text),1)]))}};export{f as _};

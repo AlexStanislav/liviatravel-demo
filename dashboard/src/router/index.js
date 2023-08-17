@@ -10,8 +10,23 @@ const router = createRouter({
         },
         {
             path: '/rezervations',
-            name: 'Rezervations',
+            name: 'Rezervari',
             component: () => import('../views/RezervationsView.vue')
+        },
+        {
+            path: '/tours',
+            name: 'Circuite',
+            component: () => import('../views/ToursView.vue')
+        },
+        {
+            path: '/tours_rezervations',
+            name: 'Circuite Rezervate',
+            component: () => import('../views/TourRezervationsView.vue')
+        },
+        {
+            path: '/custom_offers',
+            name: 'Solicitari Oferte',
+            component: () => import('../views/CustomOffersView.vue')
         }
     ]
 })

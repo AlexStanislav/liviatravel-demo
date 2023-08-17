@@ -12,9 +12,12 @@ export const useAppStore = defineStore('app', {
             children: '',
         },
         offers: [],
+        tours: [],
         url: process.env.NODE_ENV === "development" ? "http://localhost:3000" : window.location.origin,
         rezervationVisible: false,
         rezervationOffer: null,
+        rezervationTour: null,
+        offerType: 'offer',
         rezervationData: {
             lastName: "",
             firstName: "",
@@ -25,7 +28,16 @@ export const useAppStore = defineStore('app', {
             children: 0,
             date: "",
         },
+        tourRezervation: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            adults: 1,
+            children: 0,
+        },
         dbRezervations: [],
+        dbTourRezervations: [],
 
     }),
     actions: {
@@ -40,11 +52,21 @@ export const useAppStore = defineStore('app', {
                 console.log(err)
             })
         },
+        loadTours() {
+            axios.get(`${this.url}/tours`).then(res => {
+                this.tours = res.data
+            }).catch(err => {
+                console.log(err)
+            })
+        },
         setRezervationVisible(visible) {
             this.rezervationVisible = visible
         },
         setOffer(offer) {
             this.rezervationOffer = offer
+        },
+        setTour(tour) {
+            this.rezervationTour = tour
         },
         setRezervationData(data) {
             this.rezervationData[data.key] = data.value
@@ -56,6 +78,9 @@ export const useAppStore = defineStore('app', {
             } else {
                 document.querySelector("body").style.overflow = "initial";
             }
+        },
+        setOfferType(type) {
+            this.offerType = type
         }
     }
 })

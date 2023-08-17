@@ -97,10 +97,6 @@
           <td class="table-label">Pret:</td>
           <td>{{ calculatedPrice() }} &euro;</td>
         </tr>
-        <tr>
-          <td class="table-label">Locuri Disponibile</td>
-          <td>{{ roomsAvailable() }}</td>
-        </tr>
       </table>
     </div>
     <Button label="Reservare" @click="rezerve()" />
@@ -112,33 +108,25 @@ import Calendar from "primevue/calendar";
 import { useAppStore } from "../store/app";
 import Button from "primevue/button";
 import axios from "axios";
-import { useToast } from 'primevue/usetoast';
+import { useToast } from "primevue/usetoast";
 const toast = useToast();
-
 
 const store = useAppStore();
 
 const disabledDates = () => {
-    let finalArray = []
-    let tempArray = [];
-    for (const rezervation of store.dbRezervations) {
-        if(store.rezervationOffer.title === rezervation.offer_name){
-            tempArray = rezervation.disabled_dates.split(",");
-        }
-    }
-
-    for (const date of tempArray) {
-        finalArray.push(new Date(date))
-    }
-
-    return finalArray
-}
-let roomsAvailable = () => {
-  for (const offer of store.offers) {
-    if(offer.title === store.rezervationOffer.title){
-      return offer.available
+  let finalArray = [];
+  let tempArray = [];
+  for (const rezervation of store.dbRezervations) {
+    if (store.rezervationOffer.title === rezervation.offer_name) {
+      tempArray = rezervation.disabled_dates.split(",");
     }
   }
+
+  for (const date of tempArray) {
+    finalArray.push(new Date(date));
+  }
+
+  return finalArray;
 };
 
 const calculatedPrice = () => {
@@ -173,20 +161,19 @@ function endDate() {
   let day;
 
   if (store.rezervationData.date !== "") {
-      const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-      const givenDateTimestamp = new Date(store.rezervationData.date).getTime(); // Get the timestamp of the given date
-      const sevenDaysLaterTimestamp = givenDateTimestamp + 7 * millisecondsPerDay; // Add 7 days' worth of milliseconds
-      const sevenDaysLaterDate = new Date(sevenDaysLaterTimestamp); // Convert the timestamp back to a date
+    const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+    const givenDateTimestamp = new Date(store.rezervationData.date).getTime(); // Get the timestamp of the given date
+    const sevenDaysLaterTimestamp = givenDateTimestamp + 7 * millisecondsPerDay; // Add 7 days' worth of milliseconds
+    const sevenDaysLaterDate = new Date(sevenDaysLaterTimestamp); // Convert the timestamp back to a date
 
-      year = String(sevenDaysLaterDate.getFullYear());
-      month = String(sevenDaysLaterDate.getMonth() + 1).padStart(2, "0");
-      day = String(sevenDaysLaterDate.getDate()).padStart(2, "0");
-  }else{
+    year = String(sevenDaysLaterDate.getFullYear());
+    month = String(sevenDaysLaterDate.getMonth() + 1).padStart(2, "0");
+    day = String(sevenDaysLaterDate.getDate()).padStart(2, "0");
+  } else {
     year = "01";
     month = "01";
     day = "01";
   }
-
 
   return `${day}/${month}/${year}`;
 }
@@ -202,38 +189,33 @@ function rezerve() {
     adults: store.rezervationData.adults,
     rooms: store.rezervationData.rooms,
     children: store.rezervationData.children,
-    date: (store.rezervationData.date).toString(),
+    date: store.rezervationData.date.toString(),
     offerName: store.rezervationOffer.title,
     offerDuration: `${startDate()} - ${endDate()}`,
     offerPrice: store.rezervationOffer.price,
-  }
+  };
 
-  const people = parseInt(store.rezervationData.adults, 10) + parseInt(store.rezervationData.children, 10);
-  
-  if(parseInt(store.rezervationOffer.available, 10) < people){
-    toast.add({
-      severity: 'error',
-      summary: 'Eroare',
-      detail: 'Nu mai sunt locuri disponibile!',
-    })
-  }else{
-      try {
-        axios.post(`${store.url}/newRezervation`, rezervationInfo).then((res) => {
-            if(res.status === 200){
-              store.setRezervationVisible(false);
-              store.loadOffers();
-              toast.add({
-                severity: 'success',
-                summary: 'Rezervare',
-                detail: 'Rezervare cu succes!',
-              })
-            }else{
-              console.log(res);
-            }
-        })
-      } catch (error) {
-        console.log(error);
+  const people =
+    parseInt(store.rezervationData.adults, 10) +
+    parseInt(store.rezervationData.children, 10);
+
+  try {
+    axios.post(`${store.url}/newRezervation`, rezervationInfo).then((res) => {
+      if (res.status === 200) {
+        store.setRezervationVisible(false);
+        store.loadOffers();
+        toast.add({
+          severity: "success",
+          summary: "Rezervare",
+          detail: "Rezervare cu succes!",
+          life: 3000,
+        });
+      } else {
+        console.log(res);
       }
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 </script>

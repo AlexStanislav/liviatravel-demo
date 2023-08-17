@@ -29,6 +29,10 @@
     <div id="offers" class="offers-container">
       <OfferCard v-for="offer in offers" :key="offer.id" :offer="offer" />
     </div>
+    <Title :text="'Circuite Recomandate'"/>
+    <div id="tours" class="tours-container">
+      <TourCard v-for="tour in tours" :key="tour.id" :tour="tour" />
+    </div>
   </div>
 </template>
 <script setup>
@@ -38,17 +42,19 @@ import Button from "primevue/button";
 import OfferCard from "./OfferCard.vue";
 import Rating from "primevue/rating";
 import Title from "./Title.vue";
+import TourCard from "./TourCard.vue";
 
 const store = useAppStore();
 const specialOffer = ref({})
 const offers = ref([]);
+const tours = ref([]);
 
 setTimeout(() => {
   specialOffer.value = store.offers[0];
-
   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
-
   offers.value = store.offers.slice(0, 6);
+
+  tours.value = store.tours.slice(0, 2);
 }, 300);
 
 
@@ -165,6 +171,14 @@ function showRezervationDialog(offer) {
   justify-content: space-evenly;
   gap: 2rem;
   padding: 2rem 0;
+}
+
+.tours-container{
+  width: 80%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
 }
 
 @media screen and (max-width: 1366px) {

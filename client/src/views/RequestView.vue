@@ -92,6 +92,7 @@
               v-model="formData.transport"
               :options="dropdownOptions.transport"
               optionLabel="label"
+              optionValue="value"
             />
             <label for="transport">Transport</label>
           </span>
@@ -103,6 +104,7 @@
               v-model="formData.stay_type"
               :options="dropdownOptions.stay_type"
               optionLabel="label"
+              optionValue="value"
             />
             <label for="stay_type">Cazare</label>
           </span>
@@ -122,6 +124,7 @@
               v-model="formData.currency"
               :options="dropdownOptions.currency"
               optionLabel="label"
+              optionValue="value"
             />
             <label for="currency">Moneda</label>
           </span>
@@ -145,7 +148,7 @@
         </div>
       </div>
       <div class="request-row">
-        <Button type="submit" label="Trimite oferta" />
+        <Button label="Trimite oferta" @click="submitOffer()" />
       </div>
     </div>
   </div>
@@ -158,7 +161,13 @@ import Title from "../components/Title.vue";
 import Calendar from "primevue/calendar";
 import Textarea from "primevue/textarea";
 import Checkbox from "primevue/checkbox";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import axios from "axios";
+import { useAppStore } from "../store/app";
+import { useToast } from "primevue/usetoast";
+
+const toast = useToast();
+const store = useAppStore();
 
 const formData = ref({
   last_name: "",
@@ -193,8 +202,44 @@ const dropdownOptions = ref({
   currency: [
     { label: "Euro", value: "Euro" },
     { label: "LEI", value: "LEI" },
-  ]
+  ],
 });
+
+function formatDate(date) {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+
+  return `${day}/${month}/${year}`;
+}
+
+const submitOffer = () => {
+  if (formData.value.accept !== true) {
+    toast.add({
+      severity: "error",
+      summary: "Eroare",
+      detail:
+        "Acceptati ca datele mele sa fie prelucrate in vederea comunicarii ofertei/informatiilor solicitate.",
+      life: 3000,
+    });
+  } else {
+    const { accept: _, ...formInfo } = formData.value;
+
+    formInfo.start_date = formatDate(new Date(formData.value.start_date));
+    formInfo.end_date = formatDate(new Date(formData.value.end_date));
+    
+    axios.post(`${store.url}/newCustomOffer`, formInfo).then((res) => {
+      if (res.status === 200) {
+        toast.add({
+          severity: "success",
+          summary: "Succes",
+          detail: "Solicitare realizata cu succes!",
+          life: 3000,
+        });
+      }
+    });
+  }
+};
 </script>
 <style lang="scss">
 .request-container {
@@ -252,7 +297,6 @@ button[type="submit"] {
   background-color: var(--color-3);
   border: 1px solid var(--color-3);
 }
-
 
 .p-checkbox .p-checkbox-box:hover {
   border-color: var(--color-4);

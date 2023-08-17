@@ -33,7 +33,6 @@
         </div>
       </template>
       <Column field="title" sortable header="Titlu"></Column>
-      <Column field="description" sortable header="Descriere"></Column>
       <Column field="price" sortable header="Pret"></Column>
       <Column field="location" sortable header="Locatie"></Column>
       <Column field="country" sortable header="Tara"></Column>

@@ -1,46 +1,77 @@
 <template>
   <div class="current-offer-wrapper">
     <Title :text="`Oferta`" />
-    <div class="current-offer-container">
-      <img :src="store.rezervationOffer.img" />
-      <div class="current-offer-info">
+    <section class="current-offer-container">
+      <img :src="currentOfferData.img" />
+      <section class="current-offer-info">
         <div class="current-offer-detail current-offer-title">
-          {{ store.rezervationOffer.title }}
+          {{ currentOfferData.title }}
         </div>
         <div class="current-offer-detail current-offer-location">
-          {{ store.rezervationOffer.location }}
-          {{ store.rezervationOffer.country }}
+          {{ currentOfferData.location }}
+          {{ currentOfferData.country }}
         </div>
         <Rating v-model="intRating" :stars="5" readonly :cancel="false" />
         <div class="current-offer-detail current-offer-duration">
-          Durata sejur: <span>{{ store.rezervationOffer.duration }} nopti</span>
+          Durata <span v-if="store.offerType === 'offer'">sejur</span>:
+          <span
+            >{{ currentOfferData.duration }}
+            <span v-if="store.offerType === 'offer'">nopti</span>
+            <span v-if="store.offerType === 'tour'">zile</span></span
+          >
         </div>
 
-        <div class="current-offer-detail current-offer-facilities">
-          Facilitati:
-        </div>
-        <ul>
-          <li v-for="(facility, index) in offerFacilities()" :key="index">
-            {{ facility }}
-          </li>
-        </ul>
-        <div class="current-offer-detail current-offer-price">
+        <section
+          class="current-offer-details"
+          v-if="store.offerType === 'offer'"
+        >
+          <div class="current-offer-detail current-offer-facilities">
+            Facilitati:
+          </div>
+          <ul>
+            <li v-for="(facility, index) in offerFacilities()" :key="index">
+              {{ facility }}
+            </li>
+          </ul>
+        </section>
+
+        <section class="tour-dates">
+          <ul>
+            <li>
+              Plecare - <span>{{ currentOfferData.departure }}</span>
+            </li>
+            <li>
+              Intoarcere - <span>{{ currentOfferData.arrival }}</span>
+            </li>
+            <li>
+              Locuri disponibile: <span>{{ currentOfferData.available }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="current-offer-detail current-offer-price">
           <div class="current-offer-price-text">Incepand de la</div>
           <div class="current-offer-price-value">
-            {{ store.rezervationOffer.price }}
+            {{ currentOfferData.price }}
             <span class="current-offer-price-detail">&euro;</span>
           </div>
-        </div>
+          <span class="current-offer-price-text">per adult</span>
+        </section>
         <!-- <Button class="current-offer-btn" @click="goToRezervaionForm()">Rezerva</Button> -->
-      </div>
-    </div>
+      </section>
+    </section>
     <div class="current-offer-desc">
       <Title :text="`Descriere`" />
-      <p>{{ store.rezervationOffer.description }}</p>
+      <p>{{ currentOfferData.description }}</p>
     </div>
     <div class="current-offer-form">
       <Title :text="`Formular rezervare`" />
-      <RezervationForm />
+      <div v-if="store.offerType === 'offer'">
+        <RezervationForm />
+      </div>
+      <div v-if="store.offerType === 'tour'">
+        <TourForm />
+      </div>
     </div>
   </div>
 </template>
@@ -51,24 +82,35 @@ import { onMounted, ref } from "vue";
 import Title from "../components/Title.vue";
 import { useAppStore } from "../store/app";
 import RezervationForm from "../components/RezervationForm.vue";
+import TourForm from "../components/TourForm.vue";
 
 const store = useAppStore();
 
 const intRating = ref(0);
+const currentOfferData = ref({});
 
 onMounted(() => {
-  if (store.rezervationOffer !== null) {
-    intRating.value = parseInt(store.rezervationOffer.rating, 10);
+  switch (store.offerType) {
+    case "offer":
+      currentOfferData.value = store.rezervationOffer;
+      break;
+    case "tour":
+      currentOfferData.value = store.rezervationTour;
+      break;
+  }
+
+  if (currentOfferData !== null) {
+    intRating.value = parseInt(currentOfferData.value.rating, 10);
   }
 });
 
-const offerFacilities = () => {
-  return store.rezervationOffer.details
-    .split(",")
-    .filter((item) => item !== " ");
-};
+console.log(currentOfferData.value);
 
-console.log(offerFacilities());
+const offerFacilities = () => {
+  if (currentOfferData.details !== undefined) {
+    return currentOfferData.details.split(",").filter((item) => item !== " ");
+  }
+};
 </script>
 <style lang="scss">
 .current-offer-wrapper {
@@ -142,9 +184,8 @@ console.log(offerFacilities());
 .current-offer-price {
   width: fit-content;
   margin-top: 3rem;
-  margin-bottom: 1rem;
   text-align: right;
-//   position: absolute;
+  //   position: absolute;
   //   right: 0;
   left: 0;
   bottom: 0;
@@ -155,7 +196,7 @@ console.log(offerFacilities());
   color: var(--gray-600);
   font-style: italic;
   font-weight: bold;
-  line-height: 5px;
+  line-height: 15px;
 }
 
 .current-offer-price-value {
@@ -192,6 +233,21 @@ console.log(offerFacilities());
     .p-button {
       width: 100%;
       position: relative;
+    }
+  }
+}
+
+.tour-dates{
+  margin-bottom: 6rem;
+  ul{
+    li{
+      font-style: normal !important;
+      color: var(--gray-600);
+    }
+    span{
+      font-weight: bold;
+      font-style: italic;
+      color: var(--color-3);
     }
   }
 }

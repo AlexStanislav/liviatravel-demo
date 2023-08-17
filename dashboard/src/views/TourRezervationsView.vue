@@ -28,11 +28,9 @@
       <Column field="last_name" sortable header="Nume"></Column>
       <Column field="email" sortable header="Email"></Column>
       <Column field="phone" sortable header="Telefon"></Column>
-      <Column field="people" sortable header="Persoane"></Column>
-      <Column field="rooms" sortable header="Camere"></Column>
-      <Column field="offer_duration" sortable header="Durata"></Column>
-      <Column field="offer_price" sortable header="Pret Oferta"></Column>
-      <Column field="offer_name" sortable header="Nume Oferta"></Column>
+      <Column field="adults" sortable header="Adulti"></Column>
+      <Column field="children" sortable header="Copii"></Column>
+      <Column field="price" sortable header="Pret"></Column>
       <Column>
         <template #body="slotProps">
           <Button
@@ -46,7 +44,6 @@
   </div>
 </template>
 <script setup>
-
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
@@ -57,14 +54,11 @@ import { ref, onMounted } from "vue";
 
 const rezFilters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  first_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH},
+  first_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   last_name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   email: { value: null, matchMode: FilterMatchMode.CONTAINS },
   phone: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
   people: { value: null, matchMode: FilterMatchMode.EQUALS },
-  offer_duration: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  offer_price: { value: null, matchMode: FilterMatchMode.EQUALS },
-  offer_name: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const rezervations = ref([]);
 const url =
@@ -77,15 +71,15 @@ onMounted(() => {
 });
 
 const getRezervations = () => {
-  axios.get(`${url}/rezervations`).then((res) => {
+  axios.get(`${url}/tourRezervations`).then((res) => {
     rezervations.value = res.data;
   });
 };
 
-const deleteRezervation = (offer) => {
-  axios.delete(`${url}/rezervations/${offer.id}`).then(() => {
+const deleteRezervation = (rezervation) => {
+  axios.delete(`${url}/tourRezervations/${rezervation.id}`).then(() => {
     getRezervations();
-  })
+  });
 }
 </script>
 <style lang="scss">

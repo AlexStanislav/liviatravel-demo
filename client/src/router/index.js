@@ -35,19 +35,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const appStore = useAppStore()
-    if (to.name == 'offer' && !appStore.rezervationOffer) {
+    appStore.togglePreloader();
+    window.scrollTo({ top: 0 })
+    next()
+    setTimeout(() => {
         appStore.togglePreloader();
-        next('/oferte')
-        setTimeout(() => {
-            appStore.togglePreloader();
-        }, 1000)
-    } else {
-        appStore.togglePreloader();
-        next()
-        setTimeout(() => {
-            appStore.togglePreloader();
-        }, 1000)
-    }
+    }, 1000)
 })
 
 export default router

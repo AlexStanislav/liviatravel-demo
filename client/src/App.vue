@@ -18,7 +18,7 @@
             :popup="true"
           />
         </span> -->
-        <router-link to="/oferte">Oferte</router-link>
+        <router-link to="/oferte">Oferte/Circuite</router-link>
         <router-link to="/contact">Contact</router-link>
         <router-link to="/solicitare">Solicita Oferta</router-link>
       </nav>
@@ -91,6 +91,7 @@ import Logo from "./components/Logo.vue";
 
 const store = useAppStore();
 store.loadOffers();
+store.loadTours();
 
 let logoURL = new URL("./assets/img/logo.svg", import.meta.url);
 let isScrolled = ref(false);

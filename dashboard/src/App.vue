@@ -7,7 +7,10 @@
     <section>
       <nav>
         <router-link to="/"><i class="pi pi-file-edit"></i><span>Oferte</span></router-link>
-        <router-link to="/rezervations"><i class="pi pi-calendar"></i><span>Rezervari</span></router-link>
+        <router-link to="/rezervations"><i class="pi pi-calendar"></i><span>Oferte Rezervate</span></router-link>
+        <router-link to="/tours"><i class="pi pi-users"></i><span>Circuite</span></router-link>
+        <router-link to="/tours_rezervations"><i class="pi pi-calendar-times"></i><span>Circuite Rezervate</span></router-link>
+        <router-link to="/custom_offers"><i class="pi pi-wrench"></i><span>Solicitari Oferte</span></router-link>
       </nav>
       <main>
         <router-view></router-view>
@@ -65,7 +68,7 @@ nav {
     text-align: center;
     text-decoration: none;
     color: var(--text-color);
-    font-size: 0.9vw;
+    font-size: 0.7vw;
     padding: 0.5rem 0;
     display: flex;
     justify-content: space-between;
