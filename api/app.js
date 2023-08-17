@@ -137,22 +137,31 @@ app.get('/rezervations', async (req, res) => {
     res.status(200).json(rezervations);
 })
 
+app.delete('/rezervations/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await process.postgresql.query(`DELETE FROM rezervations WHERE id = $1`, [id]);
+        res.status(200).json({
+            message: 'Rezervation deleted',
+        });
+    }
+    catch (e) {
+        res.status(400).json(e);
+    }
+})
+
 app.post('/newRezervation', async (req, res) => {
     try {
         const { firstName, lastName, email, phone, adults, rooms, children, date, offerName, offerDuration, } = req.body;
         const disabledDatesArray = DATE_UTILS.dateRanges(DATE_UTILS.startDate(date, true), DATE_UTILS.endDate(date, true));
         const people = parseInt(adults, 10) + parseInt(children, 10);
         const disabledDates = disabledDatesArray.join(",");
-        
-        const offer = await process.postgresql.query(`SELECT available, price FROM offers WHERE title = $1`, [offerName]);
-        
-        const price = parseInt(offer[0].price, 10) * parseInt(rooms, 10);
-        let newAvailable = parseInt(offer[0].available, 10) - parseInt(people, 10);
 
+        const offer = await process.postgresql.query(`SELECT available, price FROM offers WHERE title = $1`, [offerName]);
+
+        const price = parseInt(offer[0].price, 10) * parseInt(rooms, 10);
 
         await process.postgresql.query(`INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates, rooms]);
-        await process.postgresql.query(`UPDATE offers SET available = $1 WHERE title = $2`, [newAvailable, offerName]);
-
 
         res.status(200).json({
             message: 'Rezervation created',
@@ -194,6 +203,123 @@ app.post('/imageOffers', imageUpload.single("offerImage"), (req, res) => {
             message: 'No file uploaded'
         })
     }
+})
+
+
+app.get("/tours", async (req, res) => {
+    const tours = await process.postgresql.query("SELECT * FROM tours");
+    res.status(200).json(tours);
+})
+
+
+app.post("/newTour", async (req, res) => {
+    try {
+        const { title, description, price, location, departure, arrival, img, country, duration, available, rating } = req.body;
+        await process.postgresql.query(`INSERT INTO tours (title, description, price, location, departure, arrival, img, country, duration, available, rating) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`, [title, description, price, location, departure, arrival, img, country, duration, available, rating]);
+        res.status(200).json({
+            message: 'Tour created'
+        })
+    } catch (e) {
+        res.status(400).json({
+            message: e
+        });
+    }
+})
+
+app.delete("/tours/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        await process.postgresql.query(`DELETE FROM tours WHERE id = $1`, [id]);
+        res.status(200).json({
+            message: 'Tour deleted'
+        });
+    } catch (e) {
+        res.status(400).json({
+            message: e
+        });
+    }
+})
+
+app.put("/tours/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, price, location, departure, arrival, img, country, duration, available, rating } = req.body;
+        await process.postgresql.query(`UPDATE tours SET title = $1, descripiton = $2, price = $3, location = $4, arrival = $5, img = $6, country = $7, duration = $8, available = $9, rating = $10 WHERE id = $11`, [title, description, price, location, departure, arrival, img, country, duration, available, rating, id]);
+        res.status(200).json({
+            message: 'Tour updated'
+        })
+    } catch (e) {
+        res.status(400).json({
+            message: e
+        });
+    }
+})
+
+
+app.get('/tourRezervations', async (req, res) => {
+    const rezervations = await process.postgresql.query(`SELECT * FROM tour_rezervations`);
+    res.status(200).json(rezervations);
+})
+
+app.delete('/tourRezervations/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await process.postgresql.query(`DELETE FROM tour_rezervations WHERE id = $1`, [id]);
+        res.status(200).json({
+            message: 'Rezervation deleted',
+        })
+    } catch (e) {
+        res.status(400).json(e);
+    }
+})
+
+app.post("/newRezervationTour", async (req, res) => {
+    try {
+        const { firstName, lastName, email, phone, adults, children, tourName } = req.body;
+        const tourData = await process.postgresql.query(`SELECT * FROM tours WHERE title = $1`, [tourName]);
+        const people = parseInt(adults, 10) + parseInt(children, 10);
+        const newAvailable = parseInt(tourData[0].available, 10) - people;
+        const price = parseInt(tourData[0].price, 10) * people;
+        await process.postgresql.query(`UPDATE tours SET available = $1 WHERE title = $2`, [newAvailable, tourName]);
+        await process.postgresql.query(`INSERT INTO tour_rezervations (first_name, last_name, email, phone, adults, children, tour_name, price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [firstName, lastName, email, phone, adults, children, tourName, price]);
+        tourData[0].available = newAvailable;
+        res.status(200).json({
+            message: 'Rezervation created',
+            tour: tourData[0]
+        })
+    } catch (e) {
+        res.status(400).json(e);
+    }
+})
+
+
+app.get("/customOffers", async (req, res) => {
+    const offers = await process.postgresql.query(`SELECT * FROM custom_offers`);
+    res.status(200).json(offers);
+})
+
+app.delete('/customOffers/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await process.postgresql.query(`DELETE FROM custom_offers WHERE id = $1`, [id]);
+        res.status(200).json({
+            message: 'Custom offer deleted',
+        })
+    } catch (e) {
+        res.status(400).json(e);
+    }
+})
+
+app.post("/newCustomOffer", async (req, res) => {
+    const { first_name, last_name, email, phone, adults, children, start_date, end_date, duration, destination, transport, stay_type, budget, currency, comment } = req.body;
+    try {
+        await process.postgresql.query(`INSERT INTO custom_offers (first_name, last_name, email, phone, adults, children, departure_date, return_date, duration, destination, transport_type, accomodation, max_budget, coin_type, details) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`, [first_name, last_name, email, phone, adults, children, start_date, end_date, duration, destination, transport, stay_type, budget, currency, comment]);
+        res.status(200).json({
+            message: 'Custom offer created'
+        })
+    } catch (e) {
+        res.status(400).json(e);}
+
 })
 
 // app.get("/seedDB", async (req, res) => {
