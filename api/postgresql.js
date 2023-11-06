@@ -10,7 +10,10 @@ module.exports = (callback = null) => {
         password: process.env.PORT ? '4NzLKFzIFa9w6bxKZTNG72nfdFOTsJrz' : 'YQtvKYFdhhfpaw27GBFqB6Z5YMfCGjnv',
         database: process.env.PORT ? 'demo_database_sqlw' : 'offers_yy98',
         port: 5432,
-        host: process.env.PORT ? 'dpg-cl4a4pbiu76s73b73f20-a.frankfurt-postgres.render.com?ssl=true' : 'localhost',
+        host: process.env.PORT ? 'dpg-cl4a4pbiu76s73b73f20-a.frankfurt-postgres.render.com' : 'localhost',
+        ssl: {
+            rejectUnauthorized: false
+        }
     });
 
     const connection = {
