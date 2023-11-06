@@ -4,7 +4,7 @@
     <section class="current-offer-container">
       <img :src="currentOfferData.img" />
       <section class="current-offer-info">
-        <div class="current-offer-detail current-offer-title">
+        <div class="current-offer-title">
           {{ currentOfferData.title }}
         </div>
         <div class="current-offer-detail current-offer-location">
@@ -13,41 +13,19 @@
         </div>
         <Rating v-model="intRating" :stars="5" readonly :cancel="false" />
         <div class="current-offer-detail current-offer-duration">
-          Durata <span v-if="store.offerType === 'offer'">sejur</span>:
+          Durata sejur:
           <span
             >{{ currentOfferData.duration }}
             <span v-if="store.offerType === 'offer'">nopti</span>
             <span v-if="store.offerType === 'tour'">zile</span></span
           >
         </div>
-
-        <section
-          class="current-offer-details"
-          v-if="store.offerType === 'offer'"
-        >
-          <div class="current-offer-detail current-offer-facilities">
-            Facilitati:
-          </div>
-          <ul>
-            <li v-for="(facility, index) in offerFacilities()" :key="index">
-              {{ facility }}
-            </li>
-          </ul>
-        </section>
-
-        <section class="tour-dates">
-          <ul>
-            <li>
-              Plecare - <span>{{ currentOfferData.departure }}</span>
-            </li>
-            <li>
-              Intoarcere - <span>{{ currentOfferData.arrival }}</span>
-            </li>
-            <li>
-              Locuri disponibile: <span>{{ currentOfferData.available }}</span>
-            </li>
-          </ul>
-        </section>
+        <div class="current-offer-detail current-offer-adults">
+         Numar Adulti: <span>{{ store.rezervationData.adults }}</span>
+        </div>
+        <div class="current-offer-detail current-offer-children">
+          Numar Copii: <span>{{ store.rezervationData.children }}</span>
+        </div>
 
         <section class="current-offer-detail current-offer-price">
           <div class="current-offer-price-text">Incepand de la</div>
@@ -62,7 +40,33 @@
     </section>
     <div class="current-offer-desc">
       <Title :text="`Descriere`" />
-      <p>{{ currentOfferData.description }}</p>
+      <div class="current-offer-desc-container">
+        <section
+          class="current-offer-details"
+          v-if="store.offerType === 'offer'"
+        >
+          <ul>
+            <li v-for="(facility, index) in offerFacilities()" :key="index">
+              <img :src="facility.icon" />{{ facility.label }}
+            </li>
+          </ul>
+        </section>
+
+        <section class="tour-dates" v-if="store.offerType === 'tour'">
+          <ul>
+            <li>
+              Plecare - <span>{{ currentOfferData.departure }}</span>
+            </li>
+            <li>
+              Intoarcere - <span>{{ currentOfferData.arrival }}</span>
+            </li>
+            <li>
+              Locuri disponibile: <span>{{ currentOfferData.available }}</span>
+            </li>
+          </ul>
+        </section>
+        <div>{{ currentOfferData.description }}</div>
+      </div>
     </div>
     <div class="current-offer-form">
       <Title :text="`Formular rezervare`" />
@@ -102,20 +106,51 @@ onMounted(() => {
   if (currentOfferData !== null) {
     intRating.value = parseInt(currentOfferData.value.rating, 10);
   }
+
+  console.log(offerFacilities());
 });
 
-console.log(currentOfferData.value);
-
 const offerFacilities = () => {
-  if (currentOfferData.details !== undefined) {
-    return currentOfferData.details.split(",").filter((item) => item !== " ");
+  if (currentOfferData.value.details !== undefined) {
+    let finalOfferFacilities = [];
+    const offerFacilitiesArray = currentOfferData.value.details
+      .split(",")
+      .filter((item) => item !== " ");
+    const facilities = [
+      { label: "Facilitati Copii", icon: "children-svgrepo-com.svg" },
+      { label: "Activitati Sportive", icon: "sport-svgrepo-com.svg" },
+      { label: "Piscina", icon: "pool-swimming-pool-svgrepo-com.svg" },
+      { label: "Parcare", icon: "parking-fee-svgrepo-com.svg" },
+      { label: "Plaja", icon: "summer-svgrepo-com.svg" },
+      {
+        label: "Spa",
+        icon: "spa-face-mask-treatment-for-woman-svgrepo-com.svg",
+      },
+      { label: "Divertisment", icon: "playing-cards-12-svgrepo-com.svg" },
+      { label: "Park Acvatic", icon: "aqua-park-svgrepo-com.svg" },
+    ];
+    for (const facilty of offerFacilitiesArray) {
+      for (const facilityObj of facilities) {
+        if (facilty.includes(facilityObj.label)) {
+          facilityObj.icon = new URL(
+            `/src/assets/img/${facilityObj.icon}`,
+            import.meta.url
+          ).href;
+          finalOfferFacilities.push(facilityObj);
+        }
+      }
+    }
+    return finalOfferFacilities;
   }
 };
 </script>
 <style lang="scss">
 .current-offer-wrapper {
+  width: 70%;
+  margin: auto;
   padding: 1rem 0 3rem 0;
   .offers-title {
+    width: 100%;
     margin: 1rem auto 3rem auto;
   }
   .p-button {
@@ -124,13 +159,23 @@ const offerFacilities = () => {
   }
 }
 .current-offer-container {
-  width: 80%;
+  width: 100%;
   margin: auto;
   display: flex;
   flex-flow: row wrap;
   gap: 2rem;
   img {
     border-radius: var(--border-radius);
+  }
+}
+
+
+.current-offer-detail{
+  font-size: 1.1rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+  span {
+    color: var(--color-3);
   }
 }
 
@@ -146,20 +191,18 @@ const offerFacilities = () => {
   font-style: italic;
 }
 
-.current-offer-duration {
-  font-size: 1.1rem;
-  color: var(--gray-600);
-  span {
-    color: var(--color-3);
-  }
-}
-
 .current-offer-info {
   position: relative;
   width: 45%;
   .p-rating {
     margin: 1rem 0;
   }
+  .p-button {
+    margin: 4rem 0 0 0;
+  }
+}
+
+.current-offer-details {
   ul {
     list-style: none;
     margin: 0;
@@ -168,16 +211,19 @@ const offerFacilities = () => {
       font-size: 1.2rem;
       font-style: italic;
       color: var(--color-3);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
     }
   }
-  .p-button {
-    margin: 4rem 0 0 0;
+  img {
+    width: 40px;
+    height: 40px;
   }
 }
-
 .current-offer-facilities {
   font-size: 1.5rem;
-  margin: 1rem 0 0.5rem 0;
   color: var(--gray-600);
 }
 
@@ -185,8 +231,8 @@ const offerFacilities = () => {
   width: fit-content;
   margin-top: 3rem;
   text-align: right;
-  //   position: absolute;
-  //   right: 0;
+  position: absolute;
+  right: 0;
   left: 0;
   bottom: 0;
 }
@@ -212,12 +258,25 @@ const offerFacilities = () => {
 }
 
 .current-offer-desc {
-  width: 80%;
+  width: 100%;
   margin: auto;
   margin-top: 5rem;
   margin-bottom: 10rem;
-  p {
+}
+
+.current-offer-desc-container {
+  display: flex;
+  gap: 2rem;
+  padding: 0 5rem;
+  div {
+    width: 100%;
+    text-align: justify;
+    color: var(--color-2);
     font-size: 1.2rem;
+  }
+  section{
+    width: 25%;
+    border-right: 1px solid var(--color-3);
   }
 }
 
@@ -237,14 +296,14 @@ const offerFacilities = () => {
   }
 }
 
-.tour-dates{
+.tour-dates {
   margin-bottom: 6rem;
-  ul{
-    li{
+  ul {
+    li {
       font-style: normal !important;
       color: var(--gray-600);
     }
-    span{
+    span {
       font-weight: bold;
       font-style: italic;
       color: var(--color-3);
@@ -255,6 +314,11 @@ const offerFacilities = () => {
 @media screen and (max-width: 1366px) {
   .current-offer-container {
     justify-content: center;
+  }
+  .current-offer-desc-container {
+    section{
+      width: 40%;
+    }
   }
   .current-offer-info {
     text-align: center;
@@ -268,6 +332,7 @@ const offerFacilities = () => {
   .current-offer-price {
     width: 100%;
     text-align: center;
+    position: relative;
   }
 }
 </style>

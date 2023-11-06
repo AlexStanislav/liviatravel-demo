@@ -11,9 +11,10 @@ module.exports = (callback = null) => {
         database: process.env.PORT ? 'demo_database_sqlw' : 'offers_yy98',
         port: 5432,
         host: process.env.PORT ? 'dpg-cl4a4pbiu76s73b73f20-a.frankfurt-postgres.render.com' : 'localhost',
-        ssl: {
-            rejectUnauthorized: false
-        }
+        //TODO remove in production
+        // ssl: {
+        //     rejectUnauthorized: false
+        // }
     });
 
     const connection = {

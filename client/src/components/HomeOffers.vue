@@ -50,7 +50,12 @@ const offers = ref([]);
 const tours = ref([]);
 
 setTimeout(() => {
-  specialOffer.value = store.offers[0];
+  for (const offer of store.offers) {
+    if (offer["is_special"] === true) {
+      specialOffer.value = offer;
+      break;
+    }
+  }
   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
   offers.value = store.offers.slice(0, 6);
 

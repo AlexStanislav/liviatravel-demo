@@ -109,6 +109,7 @@ import { useAppStore } from "../store/app";
 import Button from "primevue/button";
 import axios from "axios";
 import { useToast } from "primevue/usetoast";
+import { onMounted } from "vue";
 const toast = useToast();
 
 const store = useAppStore();
@@ -128,6 +129,14 @@ const disabledDates = () => {
 
   return finalArray;
 };
+
+onMounted(() => {
+  for (const searchParam in store.searchParams) {
+    if(store.searchParams[searchParam] !== "") {
+      store.setRezervationData({key: searchParam, value: store.searchParams[searchParam]});
+    }
+  }
+});
 
 const calculatedPrice = () => {
   const price =

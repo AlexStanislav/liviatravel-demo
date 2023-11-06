@@ -37,7 +37,6 @@
       <Column field="location" sortable header="Locatie"></Column>
       <Column field="country" sortable header="Tara"></Column>
       <Column field="duration" sortable header="Nopti"></Column>
-      <Column field="available" sortable header="Locuri"></Column>
       <Column field="rating" sortable header="Stele"></Column>
       <Column field="details" sortable header="Detalii"></Column>
       <Column>
@@ -97,7 +96,7 @@
               <InputText id="duration" v-model="newOffer.duration" />
               <label for="duration">Nopti</label>
             </span>
-            <span class="p-float-label p-input-icon-left">
+            <!-- <span class="p-float-label p-input-icon-left">
               <i class="pi pi-users"></i>
               <InputText
                 id="adults"
@@ -105,7 +104,7 @@
                 v-model="newOffer.available"
               />
               <label for="adults">Locuri</label>
-            </span>
+            </span> -->
           </div>
           <div class="form-column">
             <span class="p-float-label p-input-icon-left">
@@ -118,6 +117,12 @@
                 v-model="newOffer.rating"
               />
               <label for="rating">Stele</label>
+            </span>
+          </div>
+          <div class="form-colum">
+            <span class="p-label special-offer">
+              <label for="isSpecial">Oferta Speciala</label>
+              <ToggleButton id="isSpecial" v-model="newOffer.is_special" onLabel="Da" offLabel="Nu" />
             </span>
           </div>
         </div>
@@ -156,6 +161,7 @@
   </div>
 </template>
 <script setup>
+import ToggleButton from 'primevue/togglebutton';
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
@@ -181,6 +187,7 @@ const newOffer = ref({
   duration: 1,
   available: 1,
   rating: 1,
+  is_special: false
 });
 
 const detailType = [
@@ -238,6 +245,8 @@ const editOffer = (offer) => {
   newOffer.value = offer;
   isEditingOffer.value = true;
   createOfferVisible.value = true;
+  detailValue.value = newOffer.value.details.split(", ");
+  imagePreview.value = newOffer.value.img;
 };
 
 const deleteOffer = (offer) => {
@@ -261,7 +270,6 @@ const formatOffer = (offer) => {
     country: offer.country,
     rating: offer.rating,
     duration: offer.duration,
-    available: offer.available,
     details: finalDetails,
     img: offer.img,
   };
@@ -345,6 +353,11 @@ const saveOffer = (e) => {
   }
 }
 
+.special-offer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 .form-column-details {
   position: relative;
   height: 40vh;
@@ -361,6 +374,8 @@ const saveOffer = (e) => {
     border-radius: var(--border-radius);
   }
 }
+
+
 
 .table-actions {
   width: fit-content;
