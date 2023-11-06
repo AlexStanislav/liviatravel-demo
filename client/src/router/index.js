@@ -34,13 +34,17 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-    const appStore = useAppStore()
-    appStore.togglePreloader();
-    window.scrollTo({ top: 0 })
-    next()
-    setTimeout(() => {
+    if(to.hash === ""){
+        const appStore = useAppStore()
         appStore.togglePreloader();
-    }, 1000)
+        window.scrollTo({ top: 0 })
+        next()
+        setTimeout(() => {
+            appStore.togglePreloader();
+        }, 1000)
+    }else{
+        next()
+    }
 })
 
 export default router
