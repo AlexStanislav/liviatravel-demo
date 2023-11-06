@@ -98,9 +98,10 @@ app.get('/offers', async (req, res) => {
 app.post('/newOffer', async (req, res) => {
     try {
         const { title, description, price, location, rating, details, img, country, duration, available } = req.body;
-        const { rows } = process.postgresql.query(`INSERT INTO offers (title, description, price, location, rating, details, img, country, duration, available) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [title, description, price, location, rating, details, img, country, duration, available]);
+        const { rows } = await process.postgresql.query(`INSERT INTO offers (title, description, price, location, rating, details, img, country, duration, available) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`, [title, description, price, location, rating, details, img, country, duration, available]);
         res.status(200).json(rows);
     } catch (e) {
+        console.log(e);
         res.status(400).json(e);
     }
 })
