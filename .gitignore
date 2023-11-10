@@ -4,6 +4,6 @@
 /server/.vscode
 /dashboard/.vscode
 /client/.vscode
-
+/server/.env
 demo_offers.json
 *.jpg

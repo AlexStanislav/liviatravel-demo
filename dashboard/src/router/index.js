@@ -4,7 +4,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/',
+            path: '/dashboard',
             name: 'Oferte',
             component: () => import('../views/OffersView.vue')
         },

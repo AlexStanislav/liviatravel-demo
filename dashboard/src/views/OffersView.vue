@@ -39,6 +39,11 @@
       <Column field="duration" sortable header="Nopti"></Column>
       <Column field="rating" sortable header="Stele"></Column>
       <Column field="details" sortable header="Detalii"></Column>
+      <Column field="is_special" sortable header="Oferta Speciala">
+        <template #body="slotProps">
+          <i class="pi" :class="slotProps.data.is_special ? 'pi-check' : 'pi-times'"></i>
+        </template>
+      </Column>
       <Column>
         <template #body="slotProps">
           <div class="table-actions">
