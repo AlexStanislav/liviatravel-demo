@@ -7,7 +7,7 @@ const checkJWTToken = require('../tokenAuth')
  * @route GET /customOffers
  * @middleware checkJWTToken - Middleware for checking JWT token.
  */
-router.get("/customOffers", async (req, res) => {
+router.get("/customOffers", checkJWTToken, async (req, res) => {
     try {
         const offers = await process.postgresql.query(`SELECT * FROM custom_offers`);
         res.status(200).json(offers);
@@ -22,7 +22,7 @@ router.get("/customOffers", async (req, res) => {
  * @middleware checkJWTToken - Middleware for checking JWT token.
  * @param {string} id - The ID of the custom offer to be deleted.
  */
-router.delete('/customOffers/:id', async (req, res) => {
+router.delete('/customOffers/:id', checkJWTToken, async (req, res) => {
     try {
         const { id } = req.params;
         await process.postgresql.query(`DELETE FROM custom_offers WHERE id = $1`, [id]);
