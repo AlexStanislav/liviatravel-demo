@@ -218,6 +218,7 @@ const editTour = (offer) => {
   newTour.value = offer;
   isEditingTour.value = true;
   createTourVisible.value = true;
+  imagePreview.value = offer.img;
 };
 
 const saveTour = (e) => {

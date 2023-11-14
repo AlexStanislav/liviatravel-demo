@@ -97,33 +97,26 @@ router.put('/offers/:id', checkJWTToken, async (req, res) => {
         // Extract the offer ID from the request parameters
         const { id } = req.params;
 
-        // Extract the offer details from the request body
-        const { title, description, price, location, rating, details, img, country, duration, available } = req.body;
 
-        // Update the offer in the database using a PostgreSQL query
-        await process.postgresql.query(`
-            UPDATE offers 
-            SET 
-                title = $1, 
-                description = $2, 
-                price = $3, 
-                location = $4, 
-                rating = $5, 
-                details = $6, 
-                img = $7, 
-                country = $8, 
-                duration = $9, 
-                available = $10 
-            WHERE 
-                id = $11
-        `, [title, description, price, location, rating, details, img, country, duration, available, id]);
-        
+        // Extract the offer details from the request body
+        const { title, description, price, location, rating, details, img, country, duration } = req.body;
+
+        // const offer = await process.postgresql.query(`SELECT * FROM offers WHERE id = $1`, [id]);
+
+        // console.log(offer);
+
+        // // Update the offer in the database using a PostgreSQL query
+        await process.postgresql.query(
+            'UPDATE offers SET title = $1, description = $2, price = $3, location = $4, rating = $5, details = $6, img = $7, country = $8, duration = $9 WHERE id = $10', [title, description, price, location, rating, details, img, country, duration, id]
+        )
+
         // Send a success response with a message
         res.status(200).json({
             message: 'Offer updated',
         });
     } catch (error) {
         // Send an error response with the error details
+        console.log(error);
         res.status(400).json(error);
     }
 });

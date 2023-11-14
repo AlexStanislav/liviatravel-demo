@@ -94,10 +94,10 @@ const DATE_UTILS = {
  * @param {Object} req - The request object
  * @param {Object} res - The response object
  */
-router.get('/reservations', checkJWTToken, async (req, res) => {
+router.get('/rezervations', checkJWTToken, async (req, res) => {
     try {
         // Retrieve all reservations from the database
-        const reservations = await process.postgresql.query(`SELECT * FROM reservations`);
+        const reservations = await process.postgresql.query(`SELECT * FROM rezervations`);
         res.status(200).json(reservations);
     } catch (error) {
         res.status(400).json(error);
@@ -131,7 +131,7 @@ router.delete('/reservations/:id', checkJWTToken, async (req, res) => {
  * @param {Object} req - The request object
  * @param {Object} res - The response object
  */
-router.post('/newReservation', async (req, res) => {
+router.post('/newRezervation', async (req, res) => {
     try {
         const { 
             firstName, 
@@ -153,13 +153,13 @@ router.post('/newReservation', async (req, res) => {
         const people = parseInt(adults, 10) + parseInt(children, 10);
         const disabledDates = disabledDatesArray.join(",");
         
-        // Retrieve the offer's availability and price
-        const offer = await process.postgresql.query(`SELECT available, price FROM offers WHERE title = $1`, [offerName]);
+        // Retrieve the offer's price
+        const offer = await process.postgresql.query(`SELECT price FROM offers WHERE title = $1`, [offerName]);
         const price = parseInt(offer[0].price, 10) * parseInt(rooms, 10);
         
         // Insert a new reservation into the database
         await process.postgresql.query(
-            `INSERT INTO reservations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+            `INSERT INTO rezervations (first_name, last_name, email, phone, people, offer_name, offer_duration, offer_price, disabled_dates, rooms) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
             [firstName, lastName, email, phone, people, offerName, offerDuration, price, disabledDates, rooms]
         );
         
@@ -167,6 +167,7 @@ router.post('/newReservation', async (req, res) => {
             message: 'Reservation created',
         });
     } catch (error) {
+      console.log(error);
         res.status(400).json({
             message: error,
         });

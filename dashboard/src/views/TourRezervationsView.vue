@@ -31,6 +31,7 @@
       <Column field="adults" sortable header="Adulti"></Column>
       <Column field="children" sortable header="Copii"></Column>
       <Column field="price" sortable header="Pret"></Column>
+      <Column field="tour_name" sortable header="Nume circuit"></Column>
       <Column>
         <template #body="slotProps">
           <Button
