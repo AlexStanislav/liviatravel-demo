@@ -31,7 +31,7 @@ router.post("/login", async (request, response) => {
     } else {
         // If the password is valid, generate a token and set it as a cookie
         const secretKey = Buffer.from(process.env.SECRET_KEY256, 'hex');
-        const token = jwtUtil.createEncryptedJWT("user_login", { "user": username }, secretKey);
+        const token = await jwtUtil.createEncryptedJWT("user_login", { "user": username }, secretKey);
         response.cookie('token', token, { httpOnly: true })
 
         // Send a 200 response with a success message
