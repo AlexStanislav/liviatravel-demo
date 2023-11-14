@@ -3,6 +3,7 @@ const router = express.Router();
 const validator = require('validator')
 const jwtUtil = require('../JWT')
 const bcrypt = require('bcrypt')
+const checkJWTToken = require('../tokenAuth')
 require('dotenv').config();
 
 // Handle POST request to '/login'
@@ -43,7 +44,7 @@ router.post("/login", async (request, response) => {
 // This route updates the password of a user
 // Route: PUT /userUpdate
 // Request body: { username: string, oldPassword: string, newPassword: string }
-router.put("/userUpdate", async (req, res) => {
+router.put("/userUpdate", checkJWTToken, async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     try {
