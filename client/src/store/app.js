@@ -71,8 +71,9 @@ export const useAppStore = defineStore('app', {
         setRezervationData(data) {
             this.rezervationData[data.key] = data.value
         },
-        togglePreloader() {
-            this.showLoader = !this.showLoader
+        togglePreloader(value) {
+            console.log(value);
+            this.showLoader = value !== undefined ? value : !this.showLoader
             if(this.showLoader === true) {
                 document.querySelector("body").style.overflow = "hidden";
             } else {
@@ -81,6 +82,13 @@ export const useAppStore = defineStore('app', {
         },
         setOfferType(type) {
             this.offerType = type
+        },
+        // Set offers
+        setOffers(offers) {
+            this.offers = offers
+        },
+        setTours(tours) {
+            this.tours = tours
         }
     }
 })

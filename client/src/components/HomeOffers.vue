@@ -1,7 +1,10 @@
 <template>
   <div class="home-offers">
     <div id="special-offer" class="special-offer-container">
-      <div class="special-offer" :style="{ backgroundImage: `url(${specialOffer.img})`}">
+      <div
+        class="special-offer"
+        :style="{ backgroundImage: `url(${specialOffer.img})` }"
+      >
         <h4 class="ribbon">Oferta Zilei!</h4>
         <div class="special-offer-info">
           <div class="bg"></div>
@@ -9,69 +12,119 @@
             <h1>{{ specialOffer.title }}</h1>
             <h2>{{ specialOffer.country }}</h2>
             <h5>{{ specialOffer.location }}</h5>
-            <Rating v-model="specialOffer.rating" :stars="5" readonly :cancel="false"/>
+            <Rating
+              v-model="specialOffer.rating"
+              :stars="5"
+              readonly
+              :cancel="false"
+            />
             <p>{{ specialOffer.description }}</p>
           </div>
           <div class="offer-details">
-            <Button label="Rezervă" @click="showRezervationDialog(specialOffer)"/>
+            <Button
+              label="Rezervă"
+              @click="showRezervationDialog(specialOffer)"
+            />
             <div class="special-offer-price">
               <div>
-                {{ parseFloat(specialOffer.price).toLocaleString("ro-RO")  }} 
+                {{ parseFloat(specialOffer.price).toLocaleString("ro-RO") }}
                 <span class="currency">&euro;</span>
               </div>
-              <div class="price-specification">{{ specialOffer.duration }} nopti</div>
+              <div class="price-specification">
+                {{ specialOffer.duration }} nopti
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <Title :text="'Oferte Recomandate'"/>
+    <Title :text="'Oferte Recomandate'" />
     <div id="offers" class="offers-container">
       <OfferCard v-for="offer in offers" :key="offer.id" :offer="offer" />
     </div>
-    <Title :text="'Circuite Recomandate'"/>
+    <Title :text="'Circuite Recomandate'" />
     <div id="tours" class="tours-container">
       <TourCard v-for="tour in tours" :key="tour.id" :tour="tour" />
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useAppStore } from "../store/app";
 import Button from "primevue/button";
 import OfferCard from "./OfferCard.vue";
 import Rating from "primevue/rating";
 import Title from "./Title.vue";
 import TourCard from "./TourCard.vue";
+import axios from "axios";
 
 const store = useAppStore();
-const specialOffer = ref({})
+const specialOffer = ref({});
 const offers = ref([]);
 const tours = ref([]);
 
-setTimeout(() => {
-  for (const offer of store.offers) {
-    if (offer["is_special"] === true) {
-      specialOffer.value = offer;
-      break;
-    }
-  }
-  specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
-  offers.value = store.offers.filter((offer) => {
-    return offer.rating >= 4;
-  });
+onMounted(async () => {
+  axios
+    .get(`${store.url}/offers`)
+    .then((res) => {
+      store.setOffers(res.data.offers);
+    })
+    .then(() => {
+      for (const offer of store.offers) {
+        if (offer["is_special"] === true) {
+          specialOffer.value = offer;
+          break;
+        }
+      }
+      specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
+      offers.value = store.offers.filter((offer) => {
+        return offer.rating >= 4;
+      });
+    })
+    .then(() => {
+      axios
+        .get(`${store.url}/tours`)
+        .then((res) => {
+          store.setTours(res.data);
+        })
+        .then(() => {
+          tours.value = store.tours.filter((tour) => {
+            return tour.rating >= 4;
+          });
+        })
+        .then(() => {
+          store.togglePreloader(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
-  tours.value = store.tours.filter((tour) => {
-    return tour.rating >= 4;
-  });
-}, 300);
+// setTimeout(() => {
+//   for (const offer of store.offers) {
+//     if (offer["is_special"] === true) {
+//       specialOffer.value = offer;
+//       break;
+//     }
+//   }
+//   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
+//   offers.value = store.offers.filter((offer) => {
+//     return offer.rating >= 4;
+//   });
 
+//   tours.value = store.tours.filter((tour) => {
+//     return tour.rating >= 4;
+//   });
+// }, 2000);
 
 function showRezervationDialog(offer) {
   store.setRezervationVisible(true);
   store.setOffer(offer);
 }
-
 </script>
 <style lang="scss">
 .home-offers {
@@ -93,7 +146,7 @@ function showRezervationDialog(offer) {
   position: relative;
   overflow: hidden;
   box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.5);
-  img{
+  img {
     width: 50%;
     border-radius: var(--border-radius);
   }
@@ -108,34 +161,36 @@ function showRezervationDialog(offer) {
   padding: 1rem 2rem;
   color: #fff;
 
-  .p-rating{
+  .p-rating {
     margin-top: 1rem;
   }
 
-  h1, h2, h5 {
+  h1,
+  h2,
+  h5 {
     margin: 0;
     text-align: left;
     color: #fff;
   }
-  h1{
+  h1 {
     text-shadow: 2px 2px 2px #000;
   }
-  .p-button{
+  .p-button {
     background: var(--color-2);
     border: 1px solid var(--color-2);
     color: #fff;
   }
-  .p-button:hover{
+  .p-button:hover {
     background: var(--color-5) !important;
     border: 1px solid var(--color-5) !important;
     color: var(--color-2) !important;
   }
-  .special-offer-details{
+  .special-offer-details {
     display: flex;
     flex-flow: column;
     position: relative;
     z-index: 2;
-    p{
+    p {
       height: 100px;
       overflow: hidden;
       text-emphasis: ellipsis;
@@ -151,7 +206,7 @@ function showRezervationDialog(offer) {
   font-size: 2rem;
   position: relative;
   z-index: 2;
-  .currency{
+  .currency {
     font-size: 1.5rem;
   }
 }
@@ -162,15 +217,18 @@ function showRezervationDialog(offer) {
   color: var(--color-3);
 }
 
-.bg{
+.bg {
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  background:linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.8) 70%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.8) 70%
+  );
 }
-
 
 .offers-container {
   width: 80%;
@@ -182,7 +240,7 @@ function showRezervationDialog(offer) {
   padding: 2rem 0;
 }
 
-.tours-container{
+.tours-container {
   width: 80%;
   margin: auto;
   display: flex;
@@ -195,6 +253,5 @@ function showRezervationDialog(offer) {
     width: 100%;
     justify-content: center;
   }
-  
 }
 </style>

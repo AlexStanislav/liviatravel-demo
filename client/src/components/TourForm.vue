@@ -120,9 +120,6 @@ function rezerveTour(e) {
           });
 
           router.push({ name: "offers" });
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
         }
       });
   } catch (error) {

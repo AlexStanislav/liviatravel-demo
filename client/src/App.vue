@@ -88,10 +88,9 @@ import { useAppStore } from "./store/app";
 import RezervationForm from "./components/RezervationForm.vue";
 import Toast from "primevue/toast";
 import Logo from "./components/Logo.vue";
+import axios from "axios";
 
 const store = useAppStore();
-store.loadOffers();
-store.loadTours();
 
 let logoURL = new URL("./assets/img/logo.svg", import.meta.url);
 let isScrolled = ref(false);
@@ -105,11 +104,9 @@ onMounted(async () => {
   if (store.showLoader === true) {
     document.querySelector("body").style.overflow = "hidden";
   }
-
-  setTimeout(() => {
-    store.togglePreloader();
-  }, 1000);
 });
+
+
 
 //TODO revisit this
 // function toggle(event) {

@@ -36,11 +36,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if(to.hash === ""){
         const appStore = useAppStore()
-        appStore.togglePreloader();
+        appStore.togglePreloader(true);
         window.scrollTo({ top: 0 })
         next()
         setTimeout(() => {
-            appStore.togglePreloader();
+            appStore.togglePreloader(false);
         }, 1000)
     }else{
         next()
