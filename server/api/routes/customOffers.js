@@ -7,7 +7,7 @@ const checkJWTToken = require('../tokenAuth')
  * @route GET /customOffers
  * @middleware checkJWTToken - Middleware for checking JWT token.
  */
-router.get("/customOffers", checkJWTToken, async (req, res) => {
+router.get("/customOffers", async (req, res) => {
     try {
         const offers = await process.postgresql.query(`SELECT * FROM custom_offers`);
         res.status(200).json(offers);
@@ -22,7 +22,7 @@ router.get("/customOffers", checkJWTToken, async (req, res) => {
  * @middleware checkJWTToken - Middleware for checking JWT token.
  * @param {string} id - The ID of the custom offer to be deleted.
  */
-router.delete('/customOffers/:id', checkJWTToken, async (req, res) => {
+router.delete('/customOffers/:id', async (req, res) => {
     try {
         const { id } = req.params;
         await process.postgresql.query(`DELETE FROM custom_offers WHERE id = $1`, [id]);
@@ -56,12 +56,18 @@ router.delete('/customOffers/:id', checkJWTToken, async (req, res) => {
 
 router.post("/newCustomOffer", async (req, res) => {
     try {
-        const { firstName, lastName, emailAddress, phoneNumber, adults, children, startDate, endDate, duration, destination, transport, stayType, budget, currency, comment } = req.body;
-        await process.postgresql.query(`INSERT INTO custom_offers (first_name, last_name, email, phone, adults, children, departure_date, return_date, duration, destination, transport_type, accomodation, max_budget, coin_type, details) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`, [firstName, lastName, emailAddress, phoneNumber, adults, children, startDate, endDate, duration, destination, transport, stayType, budget, currency, comment]);
+        const { first_name, last_name, email, phone, adults, children, start_date, end_date, duration, destination, transport, stay_type, budget, currency, comment } = req.body;
+
+        // Insert the new offer into the database
+        const query = `INSERT INTO custom_offers (first_name, last_name, email, phone, adults, children, departure_date, return_date, duration, destination, transport_type, accomodation, max_budget, coin_type, details) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
+
+        await process.postgresql.query(query, [first_name, last_name, email, phone, adults, children, start_date, end_date, duration, destination, transport, stay_type, budget, currency, comment]);
+        
         res.status(200).json({
             message: 'Custom offer created'
         })
     } catch (error) {
+        console.log(error);
         res.status(400).json(error);
     }
 })
