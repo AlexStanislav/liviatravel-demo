@@ -56,8 +56,8 @@
           </span>
         </div>
       </div>
-      <div class="request-row">
-        <div class="request-column">
+      <div class="request-row date-row">
+        <div class="request-column date-column">
           <span class="p-float-label">
             <Calendar id="start_date" v-model="formData.start_date" showIcon />
             <label for="date">Data plecarii</label>
@@ -306,5 +306,32 @@ button[type="submit"] {
 .p-checkbox .p-checkbox-box.p-highlight:hover {
   background: var(--color-3);
   border-color: var(--color-3);
+}
+
+@media screen and (max-width: 1024px) {
+  .date-row{
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+  #start_date,
+  #end_date{
+    width: 25vw !important;
+  }
+  #duration{
+    width: 52vw !important;
+  }
+
+  #transport{
+    width: 12vw !important;
+  }
+
+  #destination{
+    width: 27vw !important;
+  }
+
 }
 </style>

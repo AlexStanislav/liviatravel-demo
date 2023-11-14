@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <Title :text="'Oferte Populare'"/>
+    <Title :text="'Oferte Recomandate'"/>
     <div id="offers" class="offers-container">
       <OfferCard v-for="offer in offers" :key="offer.id" :offer="offer" />
     </div>
@@ -57,9 +57,13 @@ setTimeout(() => {
     }
   }
   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
-  offers.value = store.offers.slice(0, 6);
+  offers.value = store.offers.filter((offer) => {
+    return offer.rating >= 4;
+  });
 
-  tours.value = store.tours.slice(0, 2);
+  tours.value = store.tours.filter((tour) => {
+    return tour.rating >= 4;
+  });
 }, 300);
 
 

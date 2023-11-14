@@ -77,6 +77,8 @@ function showTour(tour) {
 
 .tour-info {
   width: 30rem;
+  height: 85%;
+  overflow: hidden;
   .p-button {
     position: absolute;
     bottom: 1rem;
@@ -116,7 +118,6 @@ function showTour(tour) {
   color: var(--color-2);
   margin-top: 1rem;
   width: 95%;
-  height: 45%;
   overflow: hidden;
 }
 
@@ -133,5 +134,54 @@ function showTour(tour) {
     font-size: 2rem;
     color: var(--color-2);
   }
+}
+
+@media screen and (max-width: 1440px) {
+  .tour-card {
+    width: 100%;
+    height: 22rem;
+    img{
+      width: 70%;
+    }
+  }
+  .tour-info{
+    height: 77%;
+  }
+  .tour-info h3{
+    margin: 0.5rem 0;
+  }
+  .tour-description{
+    margin: 0;
+  }
+  .tour-title{
+    font-size: 1.5rem;
+  }
+  
+}
+
+@media screen and (max-width: 1024px) {
+  .tour-card {
+    width: 100%;
+    height: 22rem;
+    img{
+      width: 70%;
+    }
+  }
+  .tour-info{
+    height: 77%;
+  }
+  .tour-info h3{
+    margin: 0.5rem 0;
+  }
+  .tour-description{
+    margin: 0;
+  }
+  .tour-title{
+    font-size: 1.5rem;
+  }
+  .tour-price span{
+    font-size: 1.2rem;
+  }
+  
 }
 </style>

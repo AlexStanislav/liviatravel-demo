@@ -368,4 +368,16 @@ watch(offerType, () => {
     width: 20%;
   }
 }
+
+@media screen and (max-width: 1024px) {
+  .offers-sidebar {
+    width: 30%;
+  }
+  .offers-title{
+    width: 90%;
+  }
+  .offers {
+    width: 90%;
+  }
+}
 </style>
