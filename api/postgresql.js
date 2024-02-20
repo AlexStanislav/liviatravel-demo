@@ -13,9 +13,9 @@ module.exports = (callback = null) => {
         port: 5432,
         host: process.env.PORT ? process.env.PG_HOST : 'localhost',
         //TODO remove in production
-        ssl: {
-            rejectUnauthorized: false
-        }
+        // ssl: {
+        //     rejectUnauthorized: false
+        // }
     });
 
     const connection = {

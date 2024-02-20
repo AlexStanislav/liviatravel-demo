@@ -15,7 +15,7 @@ router.post("/login", async (request, response) => {
     const sanitizedUsername = validator.escape(username);
 
     // Prepare the SQL query to select the user with the given username
-    const query = `SELECT * FROM users WHERE username = $1`;
+    const query = `SELECT * FROM lt_users WHERE username = $1`;
 
     // Execute the SQL query with the sanitized username as a parameter
     const executedQuery = await process.postgresql.query(query, [sanitizedUsername]);
@@ -48,7 +48,7 @@ router.put("/userUpdate", checkJWTToken, async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     try {
-        const checkQuery = `SELECT * FROM users WHERE username = $1`;
+        const checkQuery = `SELECT * FROM lt_users WHERE username = $1`;
         const checkResult = await process.postgresql.query(checkQuery, [username]);
         const user = checkResult[0];
 
@@ -63,7 +63,7 @@ router.put("/userUpdate", checkJWTToken, async (req, res) => {
         }
 
         // Update the user's password in the database
-        const updateQuery = `UPDATE users SET password = $1 WHERE username = $2`;
+        const updateQuery = `UPDATE lt_users SET password = $1 WHERE username = $2`;
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await process.postgresql.query(updateQuery, [hashedPassword, username]);
 
