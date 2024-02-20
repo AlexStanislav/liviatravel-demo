@@ -146,7 +146,7 @@ const offerFacilities = () => {
 </script>
 <style lang="scss">
 .current-offer-wrapper {
-  width: 70%;
+  width: 80%;
   margin: auto;
   padding: 1rem 0 3rem 0;
   .offers-title {
@@ -165,6 +165,9 @@ const offerFacilities = () => {
   flex-flow: row wrap;
   gap: 2rem;
   img {
+    width: 50%;
+    height: auto;
+    object-fit: cover;
     border-radius: var(--border-radius);
   }
 }

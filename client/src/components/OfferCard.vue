@@ -85,7 +85,7 @@ onMounted(() => {
 </script>
 <style lang="scss">
 .p-card {
-  width: 20vw;
+  width: 18vw;
   box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5);
   .p-button {
     background: var(--color-2);

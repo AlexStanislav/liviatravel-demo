@@ -42,9 +42,8 @@ router.post('/imageOffers', imageUpload.single("offerImage"), (req, res) => {
 });
 
 router.get('/offers', async (req, res) => {
-    const offers = await process.postgresql.query(`SELECT * FROM offers`);
-    const rezervations = await process.postgresql.query(`SELECT * FROM rezervations`);
-    res.status(200).json({ offers, rezervations });
+    const offers = await process.postgresql.query(`SELECT * FROM lt_offers`);
+    res.status(200).json({ offers });
 })
 
 /**
@@ -56,13 +55,13 @@ router.get('/offers', async (req, res) => {
 router.post('/newOffer', checkJWTToken, async (req, res) => {
     try {
         // Destructure the required data from the request body
-        const { title, description, price, location, rating, details, img, country, duration, isSpecial } = req.body;
+        const { title, description, price, location, rating, details, img, country, duration, is_special, type } = req.body;
         
         // Execute the PostgreSQL query to insert the offer data
         const { rows } = await process.postgresql.query(
-            `INSERT INTO offers (title, description, price, location, rating, details, img, country, duration, is_special)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-            [title, description, price, location, rating, details, img, country, duration, isSpecial]
+            `INSERT INTO lt_offers (title, description, price, location, rating, details, img, country, duration, is_special, type, date_created)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP)`,
+            [title, description, price, location, rating, details, img, country, duration, is_special, type]
         );
         
         // Send the response with the inserted rows
@@ -82,7 +81,7 @@ router.post('/newOffer', checkJWTToken, async (req, res) => {
 router.delete('/offers/:id', checkJWTToken, async (req, res) => {
     try {
         const { id } = req.params;
-        await process.postgresql.query(`DELETE FROM offers WHERE id = $1`, [id]);
+        await process.postgresql.query(`DELETE FROM lt_offers WHERE id = $1`, [id]);
         res.status(200).json({
             message: 'Offer deleted',
         });
@@ -99,7 +98,7 @@ router.put('/offers/:id', checkJWTToken, async (req, res) => {
 
 
         // Extract the offer details from the request body
-        const { title, description, price, location, rating, details, img, country, duration } = req.body;
+        const { title, description, price, location, rating, details, img, country, duration, is_special, type } = req.body;
 
         // const offer = await process.postgresql.query(`SELECT * FROM offers WHERE id = $1`, [id]);
 
@@ -107,7 +106,7 @@ router.put('/offers/:id', checkJWTToken, async (req, res) => {
 
         // // Update the offer in the database using a PostgreSQL query
         await process.postgresql.query(
-            'UPDATE offers SET title = $1, description = $2, price = $3, location = $4, rating = $5, details = $6, img = $7, country = $8, duration = $9 WHERE id = $10', [title, description, price, location, rating, details, img, country, duration, id]
+            'UPDATE lt_offers SET title = $1, description = $2, price = $3, location = $4, rating = $5, details = $6, img = $7, country = $8, duration = $9, is_special = $10, type = $11 WHERE id = $12', [title, description, price, location, rating, details, img, country, duration, is_special, type, id]
         )
 
         // Send a success response with a message

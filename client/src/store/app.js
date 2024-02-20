@@ -41,6 +41,17 @@ export const useAppStore = defineStore('app', {
 
     }),
     actions: {
+        getOffers() {
+            axios.get(`${this.url}/offers`).then(res => {
+                this.offers.push(...res.data.offers)
+                this.offers = [...new Set(this.offers)]
+            }).then(() => {
+                axios.get(`${this.url}/api/tours`).then(res => {
+                    this.tours.push(...res.data)
+                    this.tours = [...new Set(this.tours)]
+                })
+            })
+        },
         setSearchParams(params) {
             this.searchParams = params
         },

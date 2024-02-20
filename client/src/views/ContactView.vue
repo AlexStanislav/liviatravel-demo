@@ -5,7 +5,7 @@
       <div class="contact-info">
         <div id="facebook" class="contact-card">
           <i class="pi pi-facebook"></i>
-          <div class="contact-text">Livia Tour</div>
+          <div class="contact-text">Livia Travel</div>
         </div>
         <div id="email" class="contact-card">
           <i class="pi pi-envelope"></i>
@@ -41,7 +41,7 @@
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         ></l-tile-layer>
         <l-marker :lat-lng="[45.12305, 25.73612]" name="Location">
-          <l-tooltip>Livia Tour</l-tooltip>
+          <l-tooltip>Livia Travel</l-tooltip>
         </l-marker>
       </l-map>
     </div>

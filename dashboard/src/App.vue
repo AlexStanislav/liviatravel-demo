@@ -8,7 +8,7 @@
           class="mr-2"
           size="large"
           shape="circle"
-          style="cursor: pointer;"
+          style="cursor: pointer"
           @click="toggleUserPanel"
         />
         <OverlayPanel ref="userMenu">
@@ -18,7 +18,9 @@
               <div class="menu-text pass-text">Schimba Parola</div>
             </li>
             <li @click="logout()">
-              <div class="menu-icon logout-icon"><i class="pi pi-sign-out"></i></div>
+              <div class="menu-icon logout-icon">
+                <i class="pi pi-sign-out"></i>
+              </div>
               <div class="menu-text exit-text">Deconectare</div>
             </li>
           </ul>
@@ -27,23 +29,9 @@
       <section>
         <nav>
           <router-link to="/dashboard"
-            ><i class="pi pi-file-edit"></i><span>Oferte</span></router-link
-          >
-          <router-link to="/rezervations"
-            ><i class="pi pi-calendar"></i
-            ><span>Oferte Rezervate</span></router-link
-          >
+            ><i class="pi pi-file-edit"></i><span>Oferte</span></router-link>
           <router-link to="/tours"
-            ><i class="pi pi-users"></i><span>Circuite</span></router-link
-          >
-          <router-link to="/tours_rezervations"
-            ><i class="pi pi-calendar-times"></i
-            ><span>Circuite Rezervate</span></router-link
-          >
-          <router-link to="/custom_offers"
-            ><i class="pi pi-wrench"></i
-            ><span>Solicitari Oferte</span></router-link
-          >
+            ><i class="pi pi-users"></i><span>Circuite</span></router-link>
         </nav>
         <main>
           <router-view></router-view>
@@ -138,28 +126,34 @@ const handleLogin = () => {
 };
 
 const changePass = () => {
-  axios.put(`${store.url}/userUpdate`, newInfo.value).then((response) => {
-    if(response.status === 200) {
-      dialogVisible.value = false;
-    } else{
-      console.log(response);
-    }
-  }).catch((err) => {
-    console.log(err);
-  })
-}
+  axios
+    .put(`${store.url}/userUpdate`, newInfo.value)
+    .then((response) => {
+      if (response.status === 200) {
+        dialogVisible.value = false;
+      } else {
+        console.log(response);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
 const logout = () => {
-  axios.post(`${store.url}/logout`).then((response) => {
-    if(response.status === 200) {
-      store.toggleLogin(false);
-    } else{
-      console.log(response);
-    }
-  }).catch((err) => {
-    console.log(err);
-  })
-}
+  axios
+    .post(`${store.url}/logout`)
+    .then((response) => {
+      if (response.status === 200) {
+        store.toggleLogin(false);
+      } else {
+        console.log(response);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 </script>
 <style lang="scss" scoped>
 header {
@@ -289,7 +283,7 @@ main {
   flex-flow: column;
   gap: 1rem;
 }
-.p-button-info{
+.p-button-info {
   display: flex;
   justify-content: center;
 }

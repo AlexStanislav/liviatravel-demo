@@ -1,22 +1,18 @@
 <template>
   <section class="offers">
     <section class="offers-sidebar">
-      <h2>Filtreaza</h2>
-      <section class="category-section">
-        <div>
-          <RadioButton
-            v-model="offerType"
-            id="offers-category"
-            value="offers"
-          />
-          <label for="offers-category">Oferte</label>
-        </div>
-        <div>
-          <RadioButton v-model="offerType" id="tours-category" value="tours" />
-          <label for="tours-category">Circuite</label>
-        </div>
-      </section>
-      <section class="search-section">
+      <h2>
+        Filtreaza
+        <i class="pi pi-filter"></i>
+        <i
+          class="pi pi-refresh"
+          @click="clearFilters()"
+          title="Sterge filtrele"
+          v-if="showClearButton"
+        ></i>
+      </h2>
+      <span class="search-container">
+        <i class="pi pi-search"></i>
         <AutoComplete
           v-model="searchValue"
           :suggestions="searchSuggestions"
@@ -26,64 +22,95 @@
           @clear="clearFilter"
           @item-select="offerItemSelect"
         />
-      </section>
-      <section class="price-section">
-        <h2>Pret</h2>
-        <div class="price-section-inputs">
-          <InputText v-model.number="priceFilterValue[0]" />
-          <InputText v-model.number="priceFilterValue[1]" />
-        </div>
-        <Slider
-          v-model="priceFilterValue"
-          range
-          :min="priceMin"
-          :max="priceMax"
-        />
-      </section>
-      <section class="stars-section">
-        <h2>Stele</h2>
-        <div
-          class="stars-checkbox"
-          v-for="(category, index) in OFFERS_UTIL.starsCategory"
-          :key="index"
-        >
-          <RadioButton
-            v-model="starsFilterValue"
-            :id="`${category.value}-stars`"
-            :value="category.value"
+      </span>
+      <Accordion :multiple="true" class="filter-section" :active-index="[0]">
+        <AccordionTab header="Tip oferta">
+          <div>
+            <RadioButton
+              v-model="offerType"
+              id="offers-category"
+              value="offers"
+            />
+            <label for="offers-category">Oferte</label>
+          </div>
+          <div>
+            <RadioButton
+              v-model="offerType"
+              id="tours-category"
+              value="tours"
+            />
+            <label for="tours-category">Circuite</label>
+          </div>
+        </AccordionTab>
+        <AccordionTab header="Pret">
+          <div class="price-section-inputs">
+            <InputText v-model.number="priceFilterValue[0]" />
+            <InputText v-model.number="priceFilterValue[1]" />
+          </div>
+          <Slider
+            v-model="priceFilterValue"
+            range
+            :min="priceMin"
+            :max="priceMax"
           />
-          <label :for="`${category.value}-stars`">{{ category.label }}</label>
-        </div>
-      </section>
-      <section class="country-section">
-        <h2>Tara</h2>
-        <div
-          class="country-checkbox"
-          v-for="(category, index) in countryCategory"
-          :key="index"
-        >
-          <RadioButton
-            v-model="countryFilterValue"
-            :id="`${category.value}-country`"
-            :value="category.value"
-          />
-          <label :for="`${category.value}-country`">{{ category.label }}</label>
-        </div>
-      </section>
-      <Button label="Filtreaza" @click="filterOffers()" />
+        </AccordionTab>
+        <AccordionTab header="Stele">
+          <div
+            class="stars-checkbox"
+            v-for="(category, index) in OFFERS_UTIL.starsCategory"
+            :key="index"
+          >
+            <RadioButton
+              v-model="starsFilterValue"
+              :id="`${category.value}-stars`"
+              :value="category.value"
+            />
+            <label :for="`${category.value}-stars`">{{ category.label }}</label>
+          </div>
+        </AccordionTab>
+        <AccordionTab header="Tara">
+          <div
+            class="country-checkbox"
+            v-for="(category, index) in countryCategory"
+            :key="index"
+          >
+            <RadioButton
+              v-model="countryFilterValue"
+              :id="`${category.value}-country`"
+              :value="category.value"
+            />
+            <label :for="`${category.value}-country`">{{
+              category.label
+            }}</label>
+          </div>
+        </AccordionTab>
+      </Accordion>
+      <Button label="Filtreaza" @click="applyFilters()" />
     </section>
 
     <section class="offers-view-wrapper">
-      <Title :text="'Ofertele noastre'" />
-      <div class="offers-wrapper">
+      <div class="offers-wrapper" v-if="!offersLoading">
         <OfferCard
-          v-for="offer in filteredOffers"
+          v-for="offer in displayedOffers"
           :key="offer.title"
           :offer="offer"
         />
         <div class="no-offers" v-if="filteredOffers.length === 0">
           Nu exista oferte pentru filtrele selectate.
         </div>
+      </div>
+      <div class="skeleton-wrapper" v-if="offersLoading">
+        <Skeleton v-for="i in rowsPerPage" :key="i" width="18vw" height="50vh" />
+      </div>
+      <div class="paginator-container">
+        <Paginator
+          ref="paginatorRef"
+          :rows="rowsPerPage"
+          :totalRecords="filteredOffers.length"
+          template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink JumpToPageDropdown"
+          @page="handlePaginatorChange"
+        >
+        </Paginator>
       </div>
     </section>
   </section>
@@ -96,10 +123,16 @@ import { onMounted, ref, watch } from "vue";
 import { useAppStore } from "../store/app";
 import OfferCard from "../components/OfferCard.vue";
 import RadioButton from "primevue/radiobutton";
-import Title from "../components/Title.vue";
 import InputText from "primevue/inputtext";
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
+import Paginator from "primevue/paginator";
+import Skeleton from "primevue/skeleton";
 
 const store = useAppStore();
+
+const rowsPerPage = ref(6);
+const paginatorRef = ref(null);
 
 const offerType = ref("offers");
 const searchValue = ref("");
@@ -107,10 +140,15 @@ const searchSuggestions = ref([]);
 const filteredOffers = ref([]);
 const starsFilterValue = ref();
 const countryFilterValue = ref();
-const countryCategory = ref([{ label: "Toate", value: "0" }]);
+const countryCategory = ref([]);
 
 const priceMin = ref(0);
 const priceMax = ref(100);
+const displayedOffers = ref([]);
+const currentPage = ref(0);
+const showClearButton = ref(false);
+const offersLoading = ref(false);
+
 
 const priceFilterValue = ref([priceMin.value, priceMax.value]);
 
@@ -126,9 +164,18 @@ onMounted(() => {
       default:
         break;
     }
-    OFFERS_UTIL.loadCategories()
+    OFFERS_UTIL.loadCategories();
+    displayedOffers.value = filteredOffers.value.slice(0, rowsPerPage.value);
   }, 300);
 });
+
+function handlePaginatorChange(event) {
+  currentPage.value = event.page;
+  let startIndex = currentPage.value * rowsPerPage.value;
+  let endIndex = startIndex + rowsPerPage.value;
+  displayedOffers.value = filteredOffers.value.slice(startIndex, endIndex);
+  window.scrollTo(0, 0);
+}
 
 const OFFERS_UTIL = {
   priceRange: function () {
@@ -147,7 +194,6 @@ const OFFERS_UTIL = {
     { label: "Circuite", value: "tours" },
   ],
   starsCategory: [
-    { label: "Toate", value: "0" },
     { label: "1 Stele", value: "1" },
     { label: "2 Stele", value: "2" },
     { label: "3 Stele", value: "3" },
@@ -160,7 +206,7 @@ const OFFERS_UTIL = {
       tempArray.push(offer.country);
     }
     let uniqueArray = [...new Set(tempArray)];
-    let finalArray = [{ label: "Toate", value: "0" }];
+    let finalArray = [];
     for (const country of uniqueArray) {
       finalArray.push({ label: country, value: country });
     }
@@ -185,38 +231,37 @@ const OFFERS_UTIL = {
     priceMin.value = OFFERS_UTIL.priceRange().min;
     priceMax.value = OFFERS_UTIL.priceRange().max;
     priceFilterValue.value = [priceMin.value, priceMax.value];
-  }
+  },
 };
 
 
 function filterOffers() {
-  let filterArray = [
-    priceFilterValue.value,
-    starsFilterValue.value,
-    countryFilterValue.value,
-  ];
-  let filteredOffersPrice = store[offerType.value].filter((offer) => {
-    return offer.price >= filterArray[0][0] && offer.price <= filterArray[0][1];
-  });
-  let filteredOffersStars = store[offerType.value].filter((offer) => {
-    if (filterArray[1] !== undefined) {
-      return offer.rating === filterArray[1];
-    }
-  });
-  let filteredOffersCountry = store[offerType.value].filter((offer) => {
-    if (filterArray[2] !== undefined) {
-      return offer.country === filterArray[2];
-    }
+  const finalOffers = store[offerType.value].filter((offer) => {
+    const starMatch =
+      !starsFilterValue.value || offer.rating === starsFilterValue.value;
+    const countryMatch =
+      !countryFilterValue.value || offer.country === countryFilterValue.value;
+    const priceMatch =
+      parseInt(offer.price) >= priceFilterValue.value[0] &&
+      parseInt(offer.price) <= priceFilterValue.value[1];
+    return starMatch && countryMatch && priceMatch;
   });
 
-  let finalArray = OFFERS_UTIL.findFiltereOffer(
-    filteredOffersPrice,
-    filteredOffersStars,
-    filteredOffersCountry
-  );
+  filteredOffers.value = finalOffers;
+  displayedOffers.value = finalOffers.slice(0, rowsPerPage.value);
 
-  filteredOffers.value = finalArray;
+  if(starsFilterValue.value || countryFilterValue.value){
+    showClearButton.value = true;
+  }
 }
+
+const applyFilters = async () => {
+  offersLoading.value = true;
+  await filterOffers();
+  setTimeout(() => {
+    offersLoading.value = false;
+  }, 800);
+};
 
 const offerSearch = (event) => {
   let filtered = store[offerType.value].filter((offer) => {
@@ -224,6 +269,14 @@ const offerSearch = (event) => {
   });
   searchSuggestions.value = filtered;
   filteredOffers.value = filtered;
+};
+
+const clearFilters = () => {
+  starsFilterValue.value = null;
+  countryFilterValue.value = null;
+  priceFilterValue.value = [priceMin.value, priceMax.value];
+  showClearButton.value = false;
+  filterOffers();
 };
 
 const clearFilter = () => {
@@ -242,12 +295,13 @@ watch(offerType, () => {
   } else if (offerType.value === "tours") {
     filteredOffers.value = store.tours;
   }
+  displayedOffers.value = filteredOffers.value.slice(0, rowsPerPage.value);
   OFFERS_UTIL.loadCategories();
 });
 </script>
 <style lang="scss">
 .offers {
-  width: 80%;
+  width: 98%;
   margin: auto;
   display: flex;
   flex-flow: row;
@@ -267,19 +321,130 @@ watch(offerType, () => {
   box-sizing: content-box;
   gap: 1rem;
   h2 {
+    width: 100%;
     color: var(--color-3);
     text-align: center;
+    position: relative;
+    i:nth-child(2) {
+      position: absolute;
+      right: 0;
+      top: -0.55rem;
+      background: var(--color-2);
+      padding: 0.3rem;
+      border-radius: 50%;
+      color: var(--color-5);
+      cursor: pointer;
+    }
   }
-  .p-radiobutton .p-radiobutton-box:hover {
-    border-color: var(--color-4);
+  .p-radiobutton-box {
+    border-radius: 10%;
   }
-
-  .p-radiobutton .p-radiobutton-box.p-highlight,
-  .p-radiobutton .p-radiobutton-box.p-highlight:hover {
-    background: var(--color-3);
-    border-color: var(--color-3);
+  .p-radiobutton-box:hover {
+    border-color: var(--color-2);
+  }
+  .p-radiobutton.p-highlight .p-radiobutton-box {
+    background: var(--color-2);
+    border-color: var(--color-2);
+    border-radius: 10%;
+  }
+  .p-radiobutton-icon {
+    background: var(--color-2);
+    border-radius: 10%;
+  }
+  .p-radiobutton-icon::before {
+    content: "\2713";
+    color: var(--color-5);
+    position: absolute;
+    font-weight: 800;
+    left: 0;
+    top: -5px;
+  }
+  .p-button {
+    background: var(--color-2);
+    color: var(--color-5);
+    border: 1px solid var(--color-2);
+  }
+  .p-button:hover {
+    background-color: var(--color-5) !important;
+    color: var(--color-2) !important;
+    border: 1px solid var(--color-5) !important;
+  }
+  .p-button:focus {
+    box-shadow: 0px 0px 5px var(--color-5) !important;
   }
 }
+
+.filter-section {
+  width: 100%;
+  .p-accordion-header-action {
+    background: var(--color-2) !important;
+    color: var(--color-5) !important;
+  }
+  .p-accordion-content {
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
+    border-color: var(--color-2);
+    div {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
+
+.p-accordion .p-accordion-header .p-accordion-header-link {
+  border: 1px solid var(--color-2);
+}
+.p-accordion
+  .p-accordion-header:not(.p-disabled).p-highlight
+  .p-accordion-header-link {
+  border-color: var(--color-2) !important;
+}
+.p-accordion
+  .p-accordion-header:not(.p-highlight):not(.p-disabled):hover
+  .p-accordion-header-link {
+  border-color: var(--color-2) !important;
+}
+.p-accordion
+  .p-accordion-header:not(.p-disabled).p-highlight:hover
+  .p-accordion-header-link {
+  border-color: var(--color-2) !important;
+}
+.p-accordion
+  .p-accordion-header:not(.p-disabled)
+  .p-accordion-header-link:focus {
+  box-shadow: none !important;
+}
+
+.search-container {
+  height: 2.8rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  border: 1px solid var(--gray-400);
+  border-radius: 5px;
+  .p-inputtext {
+    border: none;
+    width: 90%;
+  }
+  .p-inputtext:focus {
+    box-shadow: none;
+  }
+  i {
+    height: 100%;
+    background: var(--color-2);
+    color: var(--color-5);
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.7rem;
+    box-sizing: content-box;
+    border-bottom: 2px solid var(--color-2);
+    font-weight: 900;
+  }
+}
+
 .category-section,
 .price-section,
 .stars-section,
@@ -290,16 +455,6 @@ watch(offerType, () => {
   padding: 1rem;
   h2 {
     margin-top: 0rem;
-  }
-}
-
-.category-section {
-  display: flex;
-  flex-flow: column;
-  gap: 0.5rem;
-  div {
-    display: flex;
-    gap: 0.5rem;
   }
 }
 
@@ -316,10 +471,10 @@ watch(offerType, () => {
 
 .price-section {
   .p-slider-range {
-    background: var(--color-4);
+    background: var(--color-3);
   }
   .p-slider-handle {
-    border: 2px solid var(--color-4);
+    border: 2px solid var(--color-3);
   }
   .p-slider-handle:focus,
   .p-slider-handle:hover {
@@ -336,16 +491,31 @@ watch(offerType, () => {
 
 .offers-view-wrapper {
   width: 85%;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
   .offers-title {
     margin-top: 0;
     margin-bottom: 2rem;
   }
 }
 
+.paginator-container {
+  width: 100%;
+  .p-paginator {
+    background: var(--gray-300);
+  }
+}
+.skeleton-wrapper,
 .offers-wrapper {
+  width: 100%;
+  border: 1px solid var(--gray-300);
+  box-shadow: 0 0 5px rgba($color: #000000, $alpha: 0.5);
+  border-radius: 5px;
   height: fit-content;
   display: flex;
   flex-flow: row wrap;
+  margin-bottom: 0.5rem;
   gap: 2rem;
   padding: 1rem;
 }
@@ -373,7 +543,7 @@ watch(offerType, () => {
   .offers-sidebar {
     width: 30%;
   }
-  .offers-title{
+  .offers-title {
     width: 90%;
   }
   .offers {

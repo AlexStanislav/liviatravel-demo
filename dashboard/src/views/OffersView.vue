@@ -41,7 +41,10 @@
       <Column field="details" sortable header="Detalii"></Column>
       <Column field="is_special" sortable header="Oferta Speciala">
         <template #body="slotProps">
-          <i class="pi" :class="slotProps.data.is_special ? 'pi-check' : 'pi-times'"></i>
+          <i
+            class="pi"
+            :class="slotProps.data.is_special ? 'pi-check' : 'pi-times'"
+          ></i>
         </template>
       </Column>
       <Column>
@@ -55,7 +58,7 @@
             <Button
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger"
-              @click="deleteOffer(slotProps.data)"
+              @click="deleteOffer($event, slotProps.data)"
             />
           </div>
         </template>
@@ -66,7 +69,6 @@
       modal
       v-model:visible="createOfferVisible"
       header="Creeaza oferta"
-      maximizable
     >
       <form>
         <div class="form-row">
@@ -101,15 +103,6 @@
               <InputText id="duration" v-model="newOffer.duration" />
               <label for="duration">Nopti</label>
             </span>
-            <!-- <span class="p-float-label p-input-icon-left">
-              <i class="pi pi-users"></i>
-              <InputText
-                id="adults"
-                type="number"
-                v-model="newOffer.available"
-              />
-              <label for="adults">Locuri</label>
-            </span> -->
           </div>
           <div class="form-column">
             <span class="p-float-label p-input-icon-left">
@@ -124,10 +117,20 @@
               <label for="rating">Stele</label>
             </span>
           </div>
+          <div class="form-column">
+            <span class="p-float-label">
+              <Dropdown v-model="newOffer.type" :options="['Intern', 'Extern']" />
+            </span>
+          </div>
           <div class="form-colum">
             <span class="p-label special-offer">
               <label for="isSpecial">Oferta Speciala</label>
-              <ToggleButton id="isSpecial" v-model="newOffer.is_special" onLabel="Da" offLabel="Nu" />
+              <ToggleButton
+                id="isSpecial"
+                v-model="newOffer.is_special"
+                onLabel="Da"
+                offLabel="Nu"
+              />
             </span>
           </div>
         </div>
@@ -147,26 +150,38 @@
             <Checkbox v-model="detailValue" :value="detail.label" />
             <label for="facilitatiCopii">{{ detail.label }}</label>
           </div>
-          <div class="image-preview">
-            <img :src="imagePreview" />
+        </div>
+      </form>
+      <div class="image-upload">
+        <section>
+          <img :src="imagePreview" alt="" />
+          <div class="file-info" v-if="imageFile">
+            Filename: {{ imageFile.name}} <br />
+            File size: {{ formatBytes(imageFile.size, 2)}}
           </div>
-        </div>
-        <div class="form-column form-image">
-          <label for="img">Imagine</label>
-          <input id="img" type="file" accept="image/*" @input="createIMGURL" />
-        </div>
+        </section>
+        <section>
+          <div class="p-button p-button-success file-upload">
+            <i class="pi pi-upload"></i>
+            <span class="p-button-label">Alege Imagine</span>
+            <input type="file" @change="onFileChange" accept="image/*" />
+          </div>
+        </section>
+      </div>
+      <template #footer>
         <Button
           type="submit"
           label="Salveaza"
           class="p-button-success"
           @click="saveOffer"
         />
-      </form>
+      </template>
     </Dialog>
+    <ConfirmPopup></ConfirmPopup>
   </div>
 </template>
 <script setup>
-import ToggleButton from 'primevue/togglebutton';
+import ToggleButton from "primevue/togglebutton";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
@@ -175,9 +190,12 @@ import { FilterMatchMode } from "primevue/api";
 import { ref, onMounted } from "vue";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
-import FileUpload from "primevue/fileupload";
 import Checkbox from "primevue/checkbox";
 import axios from "axios";
+import { useConfirm } from "primevue/useconfirm";
+import ConfirmPopup from "primevue/confirmpopup";
+import Dropdown from 'primevue/dropdown';
+const confirm = useConfirm();
 
 const createOfferVisible = ref(false);
 const isEditingOffer = ref(false);
@@ -192,7 +210,8 @@ const newOffer = ref({
   duration: 1,
   available: 1,
   rating: 1,
-  is_special: false
+  is_special: false,
+  type: "Intern",
 });
 
 const detailType = [
@@ -229,11 +248,35 @@ const url =
 const imageFile = ref(null);
 const imagePreview = ref("");
 
-const createIMGURL = (e) => {
-  imageFile.value = e.target.files[0];
-  let imgURL = `${url}/images/${imageFile.value.name}`;
-  newOffer.value.img = imgURL;
-  imagePreview.value = imgURL;
+const onFileChange = (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    imagePreview.value = reader.result;
+    imageFile.value = file;
+  };
+  reader.readAsDataURL(file);
+};
+const formatBytes = function (bytes, decimals = 2) {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = [
+    "Bytes",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB",
+    "ZiB",
+    "YiB",
+  ];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
 onMounted(() => {
@@ -251,12 +294,24 @@ const editOffer = (offer) => {
   isEditingOffer.value = true;
   createOfferVisible.value = true;
   detailValue.value = newOffer.value.details.split(", ");
-  imagePreview.value = newOffer.value.img;
+  imagePreview.value = offer.img;
+  newOffer.value.type = offer.type;
 };
 
-const deleteOffer = (offer) => {
-  axios.delete(`${url}/offers/${offer.id}`).then(() => {
-    getOffers();
+const deleteOffer = (event, offer) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: "Esti sigur ca vrei sa stergi oferta?",
+    header: "Confirm",
+    acceptClass: "p-button-danger",
+    acceptLabel: "Da",
+    rejectLabel: "Nu",
+    icon: "pi pi-info-circle",
+    accept: () => {
+      axios.delete(`${url}/offers/${offer.id}`).then(() => {
+        getOffers();
+      });
+    },
   });
 };
 
@@ -265,6 +320,13 @@ const formatOffer = (offer) => {
 
   for (const iterator of detailValue.value) {
     finalDetails += iterator + ", ";
+  }
+
+  for (const key in newOffer.value) {
+    const value = newOffer.value[key];
+    if(value === "") {
+      newOffer.value[key] = null
+    }
   }
 
   return {
@@ -277,6 +339,8 @@ const formatOffer = (offer) => {
     duration: offer.duration,
     details: finalDetails,
     img: offer.img,
+    is_special: offer.is_special,
+    type: offer.type,
   };
 };
 
@@ -323,14 +387,20 @@ const saveOffer = (e) => {
 </script>
 <style lang="scss">
 .offer-dialog {
+  width: 100vw;
+  max-height: 100%;
+  height: 100vw;
   .p-dialog-content {
-    padding: 2rem;
+    height: 100%;
+    display: flex;
+    gap: 2rem;
+    padding-top: 2rem;
   }
   form {
     display: flex;
     flex-flow: column;
     gap: 1.5rem;
-
+    width: 50%;
     .p-inputtext {
       width: 10vw;
     }
@@ -349,12 +419,41 @@ const saveOffer = (e) => {
     }
     .p-inputtextarea {
       width: 100%;
-      min-height: 10rem;
+      height: 20rem;
       resize: none;
     }
     #details {
-      min-height: 5rem;
+      height: 5rem;
     }
+  }
+}
+
+.image-upload {
+  section {
+    display: flex;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+.file-upload {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
   }
 }
 
@@ -365,22 +464,7 @@ const saveOffer = (e) => {
 }
 .form-column-details {
   position: relative;
-  height: 40vh;
-  .image-preview {
-    overflow: hidden;
-    object-fit: contain;
-    object-position: center;
-    width: 400px;
-    height: 400px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: 1px solid var(--surface-border);
-    border-radius: var(--border-radius);
-  }
 }
-
-
 
 .table-actions {
   width: fit-content;

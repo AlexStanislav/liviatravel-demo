@@ -1,5 +1,6 @@
 <template>
   <div class="home-offers">
+    <Title :text="`Oferta Zilei`" />
     <div id="special-offer" class="special-offer-container">
       <div
         class="special-offer"
@@ -38,11 +39,10 @@
         </div>
       </div>
     </div>
-    <Title :text="'Oferte Recomandate'" />
+    <Title :text="`Ultimele oferte adaugate`" />
     <div id="offers" class="offers-container">
       <OfferCard v-for="offer in offers" :key="offer.id" :offer="offer" />
     </div>
-    <Title :text="'Circuite Recomandate'" />
     <div id="tours" class="tours-container">
       <TourCard v-for="tour in tours" :key="tour.id" :tour="tour" />
     </div>
@@ -53,73 +53,24 @@ import { onMounted, ref } from "vue";
 import { useAppStore } from "../store/app";
 import Button from "primevue/button";
 import OfferCard from "./OfferCard.vue";
-import Rating from "primevue/rating";
 import Title from "./Title.vue";
+import Rating from "primevue/rating";
 import TourCard from "./TourCard.vue";
-import axios from "axios";
 
 const store = useAppStore();
 const specialOffer = ref({});
-const offers = ref([]);
-const tours = ref([]);
+const offers = ref(store.offers);
+const tours = ref(store.tours);
 
 onMounted(async () => {
-  axios
-    .get(`${store.url}/offers`)
-    .then((res) => {
-      store.setOffers(res.data.offers);
-    })
-    .then(() => {
-      for (const offer of store.offers) {
-        if (offer["is_special"] === true) {
-          specialOffer.value = offer;
-          break;
-        }
+  if(store.offers.length > 0){
+    for (const offer of store.offers) {
+      if(offer.is_special){
+        specialOffer.value = offer;
       }
-      specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
-      offers.value = store.offers.filter((offer) => {
-        return offer.rating >= 4;
-      });
-    })
-    .then(() => {
-      axios
-        .get(`${store.url}/tours`)
-        .then((res) => {
-          store.setTours(res.data);
-        })
-        .then(() => {
-          tours.value = store.tours.filter((tour) => {
-            return tour.rating >= 4;
-          });
-        })
-        .then(() => {
-          store.togglePreloader(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-// setTimeout(() => {
-//   for (const offer of store.offers) {
-//     if (offer["is_special"] === true) {
-//       specialOffer.value = offer;
-//       break;
-//     }
-//   }
-//   specialOffer.value.rating = parseFloat(specialOffer.value.rating, 10);
-//   offers.value = store.offers.filter((offer) => {
-//     return offer.rating >= 4;
-//   });
-
-//   tours.value = store.tours.filter((tour) => {
-//     return tour.rating >= 4;
-//   });
-// }, 2000);
+    }
+  }
+})
 
 function showRezervationDialog(offer) {
   store.setRezervationVisible(true);
@@ -129,10 +80,13 @@ function showRezervationDialog(offer) {
 <style lang="scss">
 .home-offers {
   margin-top: 5rem;
+  .offers-title:first-of-type {
+    margin: 0 auto 3rem auto;
+  }
 }
 
 .special-offer-container {
-  width: 60%;
+  width: 90%;
   margin: 10px auto;
   display: flex;
   justify-content: center;
@@ -231,11 +185,11 @@ function showRezervationDialog(offer) {
 }
 
 .offers-container {
-  width: 80%;
+  width: 90%;
   margin: auto;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   gap: 2rem;
   padding: 2rem 0;
 }

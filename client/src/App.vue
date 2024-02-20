@@ -1,26 +1,15 @@
 <template>
   <div class="app-container">
     <header>
-      <nav>
+      <nav class="main-navigation">
         <div class="logo-container">
           <img class="logo" :src="logoURL" alt="logo" />
-          <div class="logo-text">Livia Tour</div>
+          <div class="logo-text">Livia Travel</div>
         </div>
-        <router-link to="/">Acasa</router-link>
-        <!-- <span class="home-container">
-        <a @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
-            >Vacante & Sejururi</a
-          >
-          <Menu
-            ref="vacation"
-            id="overlay_menu"
-            :model="vacationItemsLoad()"
-            :popup="true"
-          />
-        </span> -->
-        <router-link to="/oferte">Oferte/Circuite</router-link>
-        <router-link to="/contact">Contact</router-link>
-        <router-link to="/solicitare">Solicita Oferta</router-link>
+        <router-link to="/">Acasa</router-link> | 
+        <router-link to="/oferte">Sejururi/Circuite</router-link> | 
+        <router-link to="/contact">Contact</router-link> | 
+        <router-link to="/solicitare">Solicita Oferta</router-link> | 
       </nav>
     </header>
     <main>
@@ -29,8 +18,8 @@
     <footer>
       <div class="footer-container">
         <div class="footer-logo">
-          <Logo />
-          <div>Livia Tour</div>
+          <Logo :bg="`var(--color-5)`" :plane="`var(--color-2)`" />
+          <div>Livia Travel</div>
         </div>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, earum
@@ -42,7 +31,7 @@
       <div class="footer-container">
         <h3>Contact</h3>
         <ul class="footer-contact">
-          <li><i class="pi pi-facebook" /> <a href="#">Livia Tour</a></li>
+          <li><i class="pi pi-facebook" /> <a href="#">Livia Travel</a></li>
           <li>
             <i class="pi pi-envelope" /> <a href="mailto:">mail@exemplu.com</a>
           </li>
@@ -53,10 +42,22 @@
       </div>
       <div class="footer-container">
         <h3>Adresa</h3>
-        <div class="footer-address"><i class="pi pi-map-marker" /> Strada Exemplu nr. 123, Campina, Prahova</div>
-        <div class="footer-program"><div>Luni-Vineri:</div> 09:00-18:00</div>
-        <div class="footer-program"><div>Sambata:</div> 09:00-15:00</div>
-        <div class="footer-program"><div>Duminica:</div> Inchis</div>
+        <div class="footer-address">
+          <i class="pi pi-map-marker" /> Strada Exemplu nr. 123, Campina,
+          Prahova
+        </div>
+        <div class="footer-program">
+          <div>Luni-Vineri:</div>
+          09:00-18:00
+        </div>
+        <div class="footer-program">
+          <div>Sambata:</div>
+          09:00-15:00
+        </div>
+        <div class="footer-program">
+          <div>Duminica:</div>
+          Inchis
+        </div>
       </div>
     </footer>
     <Dialog v-model:visible="store.rezervationVisible" modal header="Rezerva">
@@ -73,63 +74,37 @@
         <div class="loader-spinner-3"></div>
       </div>
       <div class="loader-logo">
-        <Logo :bg="`var(--color-3)`" :plane="`#fff`" />
-        <div>Livia Tour</div>
+        <Logo :bg="`var(--color-2)`" :plane="`#fff`" />
+        <div>Livia Travel</div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { onBeforeMount, onMounted, ref } from "vue";
-import Menu from "primevue/menu";
+import { onMounted, ref } from "vue";
 import ScrollTop from "primevue/scrolltop";
 import Dialog from "primevue/dialog";
 import { useAppStore } from "./store/app";
 import RezervationForm from "./components/RezervationForm.vue";
 import Toast from "primevue/toast";
 import Logo from "./components/Logo.vue";
-import axios from "axios";
 
 const store = useAppStore();
 
 let logoURL = new URL("./assets/img/logo.svg", import.meta.url);
 let isScrolled = ref(false);
-const vacation = ref();
-const vacationItems = ref();
 
 onMounted(async () => {
-  window.addEventListener("scroll", () => {
-    isScrolled.value = window.scrollY > 0;
-  });
+  await store.getOffers();
   if (store.showLoader === true) {
     document.querySelector("body").style.overflow = "hidden";
   }
 });
-
-
-
-//TODO revisit this
-// function toggle(event) {
-//   vacation.value.toggle(event);
-// }
-// function vacationItemsLoad() {
-//   let tempArray = new Set();
-//   for (const offer of store.offers) {
-//     tempArray.add(offer.country);
-//   }
-
-//   let finalArray = [...tempArray].map((country) => {
-//     return {
-//       label: country,
-//     };
-//   });
-//   return finalArray;
-// }
 </script>
 <style lang="scss">
 header {
   width: 100%;
-  background: #fff;
+  background: var(--color-2);
   box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.3);
   position: fixed;
   top: 0;
@@ -142,13 +117,13 @@ header {
   font-size: 1.5rem;
   gap: 1rem;
   font-style: italic;
-  color: var(--color-3);
-  text-shadow: 0.5px 0.5px 0.5px var(--color-3);
+  color: var(--color-5);
+  text-shadow: 0.5px 0.5px 0.5px var(--color-5);
   position: absolute;
   left: 10%;
 }
 
-nav {
+.main-navigation {
   width: 90%;
   height: 70px;
   margin: auto;
@@ -156,11 +131,12 @@ nav {
   align-items: center;
   justify-content: flex-end;
   padding: 0 2rem;
-  gap: 2rem;
+  gap: 1rem;
+  color: var(--color-5);
   a {
     text-decoration: none;
     text-transform: uppercase;
-    color: var(--color-3);
+    color: var(--color-5);
     cursor: pointer;
     font-weight: 600;
   }
@@ -190,7 +166,7 @@ main {
 footer {
   display: flex;
   width: 100%;
-  background: var(--color-3);
+  background: var(--color-2);
   justify-content: center;
   gap: 3rem;
   padding: 1rem;
@@ -237,7 +213,7 @@ footer {
 
   .footer-program {
     display: flex;
-    div{
+    div {
       width: 100px;
     }
   }
@@ -307,8 +283,8 @@ footer {
   height: 200px;
   border: 10px solid #fff;
   border-radius: 50%;
-  border-top: 10px solid var(--color-3);
-  border-bottom: 10px solid var(--color-3);
+  border-top: 10px solid var(--color-2);
+  border-bottom: 10px solid var(--color-2);
   animation: spin 2s linear infinite;
   position: absolute;
 }
@@ -318,8 +294,8 @@ footer {
   height: 150px;
   border: 10px solid #fff;
   border-radius: 50%;
-  border-top: 10px solid var(--color-4);
-  border-bottom: 10px solid var(--color-4);
+  border-top: 10px solid var(--color-1);
+  border-bottom: 10px solid var(--color-1);
   animation: spin 1s linear infinite;
   position: absolute;
 }
@@ -327,7 +303,7 @@ footer {
 .loader-spinner-3 {
   width: 100px;
   height: 100px;
-  background: var(--color-3);
+  background: var(--color-2);
   border-radius: 100%;
   scale: 0.5;
   animation: grow 1s linear infinite;
@@ -341,7 +317,7 @@ footer {
   div {
     font-size: 2.5rem;
     font-style: italic;
-    color: var(--color-3);
+    color: var(--color-2);
     font-weight: 600;
     text-shadow: 0.5px 0.5px 0.5px var(--color-4);
   }

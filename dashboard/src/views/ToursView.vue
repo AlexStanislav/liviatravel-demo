@@ -35,7 +35,7 @@
       <Column field="price" header="Pret"></Column>
       <Column field="country" header="Tara"></Column>
       <Column field="duration" header="Durata"></Column>
-      <Column field="available" header="Disponibilitate"></Column>
+      <Column field="available" header="Locuri"></Column>
       <Column field="rating" header="Stele"></Column>
       <Column field="departure" header="Plecare"></Column>
       <Column field="arrival" header="Sosire"></Column>
@@ -50,7 +50,7 @@
             <Button
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger"
-              @click="deleteTour(slotProps.data)"
+              @click="deleteTour($event, slotProps.data)"
             />
           </div>
         </template>
@@ -61,7 +61,6 @@
       modal
       v-model:visible="createTourVisible"
       header="Creeaza circuit"
-      maximizable
     >
       <form>
         <div class="form-row">
@@ -128,13 +127,19 @@
           </div>
         </div>
         <div class="form-row">
-            <div class="form-column">
-              <span class="p-float-label p-input-icon-left">
-                <i class="pi pi-angle-double-left"></i>
-                <InputText id="arrival" v-model="newTour.arrival" />
-                <label for="arrival">Sosire</label>
-              </span>
-            </div>
+          <div class="form-column">
+            <span class="p-float-label p-input-icon-left">
+              <i class="pi pi-angle-double-left"></i>
+              <InputText id="arrival" v-model="newTour.arrival" />
+              <label for="arrival">Sosire</label>
+            </span>
+
+            <Dropdown
+              v-model="newTour.type"
+              :options="['Intern', 'Extern']"
+              placeholder="Tip circuit"
+            />
+          </div>
         </div>
         <div class="form-column">
           <span class="p-float-label" style="width: 100%">
@@ -142,21 +147,33 @@
             <label for="description">Descriere</label>
           </span>
         </div>
-        <div class="form-column form-image">
-          <label for="img">Imagine</label>
-          <input id="img" type="file" accept="image/*" @input="createIMGURL" />
-        </div>
-        <div class="image-preview">
-            <img :src="imagePreview" />
+      </form>
+      <div class="image-upload">
+        <section>
+          <img :src="imagePreview" alt="" />
+          <div class="file-info" v-if="imageFile">
+            Filename: {{ imageFile.name }} <br />
+            File size: {{ formatBytes(imageFile.size, 2) }}
           </div>
+        </section>
+        <section>
+          <div class="p-button p-button-success file-upload">
+            <i class="pi pi-upload"></i>
+            <span class="p-button-label">Alege Imagine</span>
+            <input type="file" @change="onFileChange" accept="image/*" />
+          </div>
+        </section>
+      </div>
+      <template #footer>
         <Button
           type="submit"
           label="Salveaza"
           class="p-button-success"
           @click="saveTour"
         />
-      </form>
+      </template>
     </Dialog>
+    <ConfirmPopup></ConfirmPopup>
   </div>
 </template>
 <script setup>
@@ -169,12 +186,15 @@ import { FilterMatchMode } from "primevue/api";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
+import { useConfirm } from "primevue/useconfirm";
+import ConfirmPopup from "primevue/confirmpopup";
+import Dropdown from "primevue/dropdown";
+const confirm = useConfirm();
 
 const tours = ref([]);
 const newTour = ref({});
 const createTourVisible = ref(false);
 const isEditingTour = ref(false);
-
 
 const url =
   process.env.NODE_ENV === "development"
@@ -186,8 +206,30 @@ const tourFilters = ref({
   title: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
 });
 
+const formatBytes = function (bytes, decimals = 2) {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = [
+    "Bytes",
+    "KiB",
+    "MiB",
+    "GiB",
+    "TiB",
+    "PiB",
+    "EiB",
+    "ZiB",
+    "YiB",
+  ];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
 function getTours() {
-  axios.get(`${url}/tours`).then((res) => {
+  axios.get(`${url}/api/tours`).then((res) => {
     tours.value = res.data;
   });
 }
@@ -196,21 +238,33 @@ onMounted(() => {
   getTours();
 });
 
-
 const imageFile = ref(null);
 const imagePreview = ref("");
 
-const createIMGURL = (e) => {
-  imageFile.value = e.target.files[0];
-  let imgURL = `${url}/images/${imageFile.value.name}`;
-  newTour.value.img = imgURL;
-  imagePreview.value = imgURL;
+const onFileChange = (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    imagePreview.value = reader.result;
+    imageFile.value = file;
+  };
+  reader.readAsDataURL(file);
 };
 
-
-const deleteTour = (offer) => {
-  axios.delete(`${url}/tours/${offer.id}`).then(() => {
-    getTours();
+const deleteTour = (event, offer) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: "Esti sigur ca vrei sa stergi acest circuit?",
+    header: "Confirm",
+    acceptClass: "p-button-danger",
+    acceptLabel: "Da",
+    rejectLabel: "Nu",
+    icon: "pi pi-info-circle",
+    accept: () => {
+      axios.delete(`${url}/tours/${offer.id}`).then(() => {
+        getTours();
+      });
+    },
   });
 };
 
@@ -219,11 +273,12 @@ const editTour = (offer) => {
   isEditingTour.value = true;
   createTourVisible.value = true;
   imagePreview.value = offer.img;
+
 };
 
 const saveTour = (e) => {
   e.preventDefault();
-  
+
   if (isEditingTour.value === true) {
     axios.put(`${url}/tours/${newTour.value.id}`, newTour.value).then(() => {
       createTourVisible.value = false;
@@ -231,6 +286,7 @@ const saveTour = (e) => {
       getTours();
     });
   } else {
+    newTour.value.img = `${url}/images/${imageFile.value.name}`;
     axios
       .post(`${url}/newTour`, newTour.value)
       .then((res) => {
@@ -259,7 +315,6 @@ const saveTour = (e) => {
       });
   }
 };
-
 </script>
 <style lang="scss">
 .tour-desc {
@@ -269,10 +324,16 @@ const saveTour = (e) => {
 }
 
 .tour-dialog {
+  width: 100vw;
+  max-height: 100%;
+  height: 100vw;
   .p-dialog-content {
-    padding: 2rem;
+    height: 100%;
+    display: flex;
+    gap: 2rem;
   }
   form {
+    margin-top: 1rem;
     display: flex;
     flex-flow: column;
     gap: 1.5rem;
@@ -295,7 +356,7 @@ const saveTour = (e) => {
     }
     .p-inputtextarea {
       width: 100%;
-      min-height: 10rem;
+      min-height: 20rem;
       resize: none;
     }
     #details {
@@ -313,4 +374,32 @@ const saveTour = (e) => {
   }
 }
 
+.image-upload {
+  section {
+    display: flex;
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    object-position: center center;
+  }
+}
+
+.file-upload {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  input {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+}
 </style>

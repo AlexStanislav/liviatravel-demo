@@ -22,8 +22,6 @@ app.use('/images', express.static('images'));
 
 app.use('/', require('./routes/offers'));
 app.use('/', require('./routes/tours'));
-app.use('/', require('./routes/rezervations'));
-app.use('/', require('./routes/customOffers'));
 
 app.get('/dashboard', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../dashboard/index.html'))
