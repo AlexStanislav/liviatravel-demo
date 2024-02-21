@@ -12,7 +12,6 @@ app.use(express.static('public'));
 app.use(express.static('dashboard'));
 app.use(express.json());
 app.use(cookieParser());
-app.use(history())
 app.use(express.urlencoded({ extended: true }));
 //TODO set proper cors (cors())
 // app.use(cors({
@@ -26,8 +25,11 @@ app.use('/', require('./routes/offers'));
 app.use('/', require('./routes/tours'));
 
 app.get('/dashboard', (req, res) => {
+    console.log(__dirname, '../dashboard/index.html');
     res.sendFile(path.resolve(__dirname, '../dashboard/index.html'))
 })
+
+app.use(history())
 
 app.use('/', require('./routes/dashboard'));
 
