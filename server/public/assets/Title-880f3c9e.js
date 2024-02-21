@@ -1,1 +1,0 @@
-import{o as s,c as o,b as t,t as _}from"./index-bb7cb9c3.js";const a={class:"offers-title"},c=t("div",{class:"offers-title-bg"},null,-1),i={class:"offers-title-text"},d={__name:"Title",props:{text:{type:String,default:""}},setup(e){return(l,n)=>(s(),o("div",a,[c,t("div",i,_(e.text),1)]))}};export{d as _};

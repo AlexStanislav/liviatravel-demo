@@ -59,7 +59,7 @@ function showTour(tour) {
 </script>
 <style lang="scss">
 .tour-card {
-  width: fit-content;
+  width: 80rem;
   display: flex;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
   border-radius: 5px;
