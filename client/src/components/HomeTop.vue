@@ -22,17 +22,18 @@
 </template>
 <script setup>
 import Carousel from "primevue/carousel";
-import Rating from "primevue/rating";
 import Button from "primevue/button";
-import { onMounted, ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useAppStore } from "../store/app";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const carouselOffers = ref([]);
 const store = useAppStore();
 
-onMounted(async () => {
-  carouselOffers.value = store.offers.slice(0, 3);
+watchEffect(() => {
+  setTimeout(() => {
+    carouselOffers.value = store.offers.slice(0, 3);
+  }, 300);
 });
 
 function showOffer(offer) {
@@ -44,11 +45,10 @@ function showOffer(offer) {
 .home-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 70px);
   .p-carousel-indicators {
-    width: fit-content;
     position: absolute;
-    bottom: 4.4rem;
+    bottom: 0;
     left: 46%;
     background: var(--color-2);
     border-top-right-radius: 5px;
@@ -131,5 +131,28 @@ function showOffer(offer) {
   background: var(--color-5) !important;
   border: 1px solid var(--color-5) !important;
   color: var(--color-2) !important;
+}
+
+@media screen and (max-width: 1366px) {
+  .carousel-container {
+    .img-details {
+      h1 {
+        font-size: 4rem;
+      }
+      h2 {
+        font-size: 2rem;
+      }
+      p {
+        width: 80%;
+        font-size: 1rem;
+      }
+    }
+  }
+  .home-container{
+    .p-carousel-indicators {
+      left: 44.7%;
+    }
+  }
+  
 }
 </style>

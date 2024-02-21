@@ -62,15 +62,61 @@ const specialOffer = ref({});
 const offers = ref(store.offers);
 const tours = ref(store.tours);
 
-onMounted(async () => {
-  if(store.offers.length > 0){
-    for (const offer of store.offers) {
-      if(offer.is_special){
-        specialOffer.value = offer;
+onMounted(() => {
+  setTimeout(() => {
+    if (store.offers.length > 0) {
+      for (const offer of store.offers) {
+        if (offer.is_special) {
+          specialOffer.value = offer;
+        }
       }
     }
-  }
-})
+    offers.value = latestOffers();
+    tours.value = latestTours();
+  }, 300);
+});
+
+const latestOffers = () => {
+  return store.offers
+    .reduce((acc, curr) => {
+      if (
+        !acc.length ||
+        new Date(curr.date_created) > new Date(acc[0].date_created)
+      ) {
+        return [curr];
+      } else if (
+        new Date(curr.date_created).getTime() ===
+        new Date(acc[0].date_created).getTime()
+      ) {
+        acc.push(curr);
+        return acc;
+      } else {
+        return acc;
+      }
+    }, [])
+    .slice(0, 6);
+};
+
+const latestTours = () => {
+  return store.tours
+    .reduce((acc, curr) => {
+      if (
+        !acc.length ||
+        new Date(curr.date_created) > new Date(acc[0].date_created)
+      ) {
+        return [curr];
+      } else if (
+        new Date(curr.date_created).getTime() ===
+        new Date(acc[0].date_created).getTime()
+      ) {
+        acc.push(curr);
+        return acc;
+      } else {
+        return acc;
+      }
+    }, [])
+    .slice(0, 3);
+};
 
 function showRezervationDialog(offer) {
   store.setRezervationVisible(true);
@@ -79,7 +125,7 @@ function showRezervationDialog(offer) {
 </script>
 <style lang="scss">
 .home-offers {
-  margin-top: 5rem;
+  margin-top: 3rem;
   .offers-title:first-of-type {
     margin: 0 auto 3rem auto;
   }
@@ -189,7 +235,7 @@ function showRezervationDialog(offer) {
   margin: auto;
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 2rem;
   padding: 2rem 0;
 }

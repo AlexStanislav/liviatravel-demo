@@ -64,6 +64,7 @@ let intRating = ref(0)
 
 function showOffer(offer) {
   store.setOffer(offer);
+  store.setOfferType("offer");
   router.push({ name: "offer" });
 }
 
@@ -162,7 +163,7 @@ onMounted(() => {
 
 @media screen and (max-width: 1366px) {
   .p-card {
-    width: 25vw;
+    width: 23vw;
   }
 }
 </style>

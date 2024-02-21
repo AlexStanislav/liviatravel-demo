@@ -38,9 +38,13 @@ export const useAppStore = defineStore('app', {
         },
         dbRezervations: [],
         dbTourRezervations: [],
+        appReady: false
 
     }),
     actions: {
+        toggleAppReady(value){
+            this.appReady = value !== undefined ? value : !this.appReady
+        },
         getOffers() {
             axios.get(`${this.url}/offers`).then(res => {
                 this.offers.push(...res.data.offers)
@@ -58,13 +62,12 @@ export const useAppStore = defineStore('app', {
         loadOffers() {
             axios.get(`${this.url}/offers`).then(res => {
                 this.offers = res.data.offers
-                this.dbRezervations = res.data.rezervations
             }).catch(err => {
                 console.log(err)
             })
         },
         loadTours() {
-            axios.get(`${this.url}/tours`).then(res => {
+            axios.get(`${this.url}/api/tours`).then(res => {
                 this.tours = res.data
             }).catch(err => {
                 console.log(err)
@@ -83,7 +86,6 @@ export const useAppStore = defineStore('app', {
             this.rezervationData[data.key] = data.value
         },
         togglePreloader(value) {
-            console.log(value);
             this.showLoader = value !== undefined ? value : !this.showLoader
             if(this.showLoader === true) {
                 document.querySelector("body").style.overflow = "hidden";

@@ -227,7 +227,7 @@ const submitOffer = () => {
 
     formInfo.start_date = formatDate(new Date(formData.value.start_date));
     formInfo.end_date = formatDate(new Date(formData.value.end_date));
-    
+
     axios.post(`${store.url}/newCustomOffer`, formInfo).then((res) => {
       if (res.status === 200) {
         toast.add({
@@ -250,7 +250,7 @@ const submitOffer = () => {
 }
 
 .request-form {
-  width: 60%;
+  width: 80%;
   margin: 4rem auto;
 }
 
@@ -261,7 +261,7 @@ const submitOffer = () => {
   gap: 1rem;
   margin: 2rem 0 0 0;
   input {
-    width: 25vw;
+    width: 30vw;
   }
   .request-column {
     display: flex;
@@ -270,20 +270,23 @@ const submitOffer = () => {
   #destination {
     width: 29vw;
   }
+  #duration {
+    width: 10vw;
+  }
   #transport,
   #currency,
   #stay_type {
-    width: 10vw;
+    width: 15vw;
   }
   #budget {
-    width: 40vw;
+    width: 45vw;
   }
   #start_date,
   #end_date {
-    width: 12vw;
+    width: 24.5vw;
   }
   #comment {
-    width: 51vw;
+    width: 61vw;
     height: 20vh;
     resize: none;
   }
@@ -308,30 +311,58 @@ button[type="submit"] {
   border-color: var(--color-3);
 }
 
+@media screen and (max-width: 1366px) {
+  .request-form {
+    width: 90%;
+    input {
+      width: 35vw;
+    }
+    #destination {
+      width: 29vw;
+    }
+    #transport,
+    #currency,
+    #stay_type {
+      width: 20vw;
+    }
+    #budget {
+      width: 50vw;
+    }
+    #start_date,
+    #end_date {
+      width: 35vw;
+    }
+    #duration {
+      width: 71vw;
+    }
+    #comment {
+      width: 71vw;
+    }
+  }
+}
+
 @media screen and (max-width: 1024px) {
-  .date-row{
+  .date-row {
     display: flex;
     flex-flow: column wrap;
     justify-content: center;
     align-items: center;
   }
 
-
   #start_date,
-  #end_date{
+  #end_date {
     width: 25vw !important;
   }
-  #duration{
+  #duration {
     width: 52vw !important;
   }
 
-  #transport{
+  #transport {
     width: 12vw !important;
   }
 
-  #destination{
+  #destination {
     width: 27vw !important;
   }
-
 }
 </style>

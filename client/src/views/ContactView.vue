@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="map-container" style="height: 600px; width: 800px">
-      <l-map ref="map" v-model:zoom="zoom" :center="[45.12323, 25.73624]">
+      <l-map ref="map" v-model:zoom="zoom" :center="[45.12323, 25.73624]" :use-global-leaflet="false">
         <l-tile-layer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -58,6 +58,7 @@ const zoom = ref(18);
 </script>
 <style lang="scss">
 .contact-container {
+  height: 100vh;
   padding: 2rem;
   display: flex;
   flex-flow: row wrap;
@@ -107,7 +108,7 @@ const zoom = ref(18);
   }
   .contact-text {
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 }
 
@@ -121,7 +122,7 @@ const zoom = ref(18);
 }
 
 .map-container {
-  border: 2px solid var(--color-3);
+  border: 2px solid var(--color-2);
   margin-top: 5vh;
   position: relative;
   z-index: 1;
@@ -129,6 +130,7 @@ const zoom = ref(18);
 
 @media screen and (max-width: 1366px) {
   .contact-container {
+    height: fit-content;
     justify-content: center;
   }
   .info-container{

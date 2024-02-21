@@ -9,7 +9,7 @@
         <router-link to="/">Acasa</router-link> | 
         <router-link to="/oferte">Sejururi/Circuite</router-link> | 
         <router-link to="/contact">Contact</router-link> | 
-        <router-link to="/solicitare">Solicita Oferta</router-link> | 
+        <router-link to="/solicitare">Solicita Oferta</router-link> 
       </nav>
     </header>
     <main>
@@ -139,6 +139,14 @@ header {
     color: var(--color-5);
     cursor: pointer;
     font-weight: 600;
+    transition: all 0.15s ease-in-out;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.25rem;
+    margin-top: 0.3rem;
+  }
+  a:hover{
+    color: #fff;
+    border-bottom: 1px solid #fff;
   }
 }
 

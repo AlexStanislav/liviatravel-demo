@@ -31,7 +31,7 @@
               id="offers-category"
               value="offers"
             />
-            <label for="offers-category">Oferte</label>
+            <label for="offers-category">Sejur</label>
           </div>
           <div>
             <RadioButton
@@ -39,7 +39,25 @@
               id="tours-category"
               value="tours"
             />
-            <label for="tours-category">Circuite</label>
+            <label for="tours-category">Circuit</label>
+          </div>
+        </AccordionTab>
+        <AccordionTab header="Locatie oferta">
+          <div>
+            <RadioButton
+              v-model="offerLocation"
+              id="offers-category"
+              value="intern"
+            />
+            <label for="offers-category">Interna</label>
+          </div>
+          <div>
+            <RadioButton
+              v-model="offerLocation"
+              id="tours-category"
+              value="extern"
+            />
+            <label for="tours-category">Externa</label>
           </div>
         </AccordionTab>
         <AccordionTab header="Pret">
@@ -100,7 +118,12 @@
         </div>
       </div>
       <div class="skeleton-wrapper" v-if="offersLoading">
-        <Skeleton v-for="i in rowsPerPage" :key="i" width="18vw" height="50vh" />
+        <Skeleton
+          v-for="i in rowsPerPage"
+          :key="i"
+          width="18vw"
+          height="50vh"
+        />
       </div>
       <div class="paginator-container">
         <Paginator
@@ -134,6 +157,7 @@ const store = useAppStore();
 const rowsPerPage = ref(6);
 const paginatorRef = ref(null);
 
+const offerLocation = ref(null);
 const offerType = ref("offers");
 const searchValue = ref("");
 const searchSuggestions = ref([]);
@@ -148,7 +172,6 @@ const displayedOffers = ref([]);
 const currentPage = ref(0);
 const showClearButton = ref(false);
 const offersLoading = ref(false);
-
 
 const priceFilterValue = ref([priceMin.value, priceMax.value]);
 
@@ -234,9 +257,9 @@ const OFFERS_UTIL = {
   },
 };
 
-
 function filterOffers() {
   const finalOffers = store[offerType.value].filter((offer) => {
+    const locationMatch = !offerLocation.value || offer.type.toLowerCase() === offerLocation.value;
     const starMatch =
       !starsFilterValue.value || offer.rating === starsFilterValue.value;
     const countryMatch =
@@ -244,13 +267,13 @@ function filterOffers() {
     const priceMatch =
       parseInt(offer.price) >= priceFilterValue.value[0] &&
       parseInt(offer.price) <= priceFilterValue.value[1];
-    return starMatch && countryMatch && priceMatch;
+    return locationMatch && starMatch && countryMatch && priceMatch;
   });
 
   filteredOffers.value = finalOffers;
   displayedOffers.value = finalOffers.slice(0, rowsPerPage.value);
 
-  if(starsFilterValue.value || countryFilterValue.value){
+  if (starsFilterValue.value || countryFilterValue.value || offerLocation.value) {
     showClearButton.value = true;
   }
 }
@@ -274,6 +297,7 @@ const offerSearch = (event) => {
 const clearFilters = () => {
   starsFilterValue.value = null;
   countryFilterValue.value = null;
+  offerLocation.value = null;
   priceFilterValue.value = [priceMin.value, priceMax.value];
   showClearButton.value = false;
   filterOffers();
@@ -532,7 +556,7 @@ watch(offerType, () => {
 
 @media screen and (max-width: 1366px) {
   .offers-wrapper {
-    justify-content: center;
+    justify-content: flex-start;
   }
   .offers-sidebar {
     width: 20%;
