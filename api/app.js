@@ -4,6 +4,7 @@ const app = express();
 const postgresql = require('./postgresql');
 const path = require('path');
 const cookieParser = require('cookie-parser')
+const history = require('connect-history-api-fallback');
 
 postgresql();
 
@@ -11,6 +12,7 @@ app.use(express.static('public'));
 app.use(express.static('dashboard'));
 app.use(express.json());
 app.use(cookieParser());
+app.use(history())
 app.use(express.urlencoded({ extended: true }));
 //TODO set proper cors (cors())
 // app.use(cors({
