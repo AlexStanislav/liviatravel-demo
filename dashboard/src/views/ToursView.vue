@@ -21,7 +21,7 @@
             icon="pi pi-plus"
             class="p-button-success"
             label="Adauga circuit nou"
-            @click="createTourVisible = true"
+            @click="openCreateTour()"
           />
           <Button
             icon="pi pi-refresh"
@@ -266,6 +266,13 @@ const deleteTour = (event, offer) => {
       });
     },
   });
+};
+
+const openCreateTour = () => {
+  newTour.value = {};
+  createTourVisible.value = true;
+  isEditingTour.value = false;
+  imagePreview.value = "";
 };
 
 const editTour = (offer) => {

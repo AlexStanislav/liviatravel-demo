@@ -21,7 +21,7 @@
             icon="pi pi-plus"
             class="p-button-success"
             label="Creeaza oferta"
-            @click="createOfferVisible = true"
+            @click="openCreateOffer()"
           />
           <Button
             icon="pi pi-refresh"
@@ -38,7 +38,11 @@
       <Column field="country" sortable header="Tara"></Column>
       <Column field="duration" sortable header="Nopti"></Column>
       <Column field="rating" sortable header="Stele"></Column>
-      <Column field="details" sortable header="Detalii"></Column>
+      <Column field="details" sortable header="Detalii">
+        <template #body="slotProps">
+          {{ formatDetails(slotProps.data.details) }}
+        </template>
+      </Column>
       <Column field="is_special" sortable header="Oferta Speciala">
         <template #body="slotProps">
           <i
@@ -287,6 +291,31 @@ const getOffers = () => {
   axios.get(`${url}/offers`).then((res) => {
     offers.value = res.data.offers;
   });
+};
+
+const openCreateOffer = () => {
+  isEditingOffer.value = false;
+  createOfferVisible.value = true;
+  newOffer.value = {
+    title: "",
+    description: "",
+    price: 0,
+    location: "",
+    country: "",
+    details: "",
+    img: "",
+    duration: 1,
+    available: 1,
+    rating: 1,
+    is_special: false,
+    type: "Intern",
+  }
+}
+
+const formatDetails = (details) => {
+  const detailsArray = details.split(", ");
+  const filteredArray = detailsArray.filter((detail) => detail !== "");
+  return filteredArray.join(", ");
 };
 
 const editOffer = (offer) => {
