@@ -6,10 +6,10 @@
           <img class="logo" :src="logoURL" alt="logo" />
           <div class="logo-text">Livia Travel</div>
         </div>
-        <router-link to="/">Acasa</router-link> |
-        <router-link to="/oferte">Sejururi/Circuite</router-link> |
-        <router-link to="/contact">Contact</router-link> |
-        <router-link to="/solicitare">Solicita Oferta</router-link>
+        <router-link to="/">Acasa</router-link> | 
+        <router-link to="/oferte">Sejururi/Circuite</router-link> | 
+        <router-link to="/contact">Contact</router-link> | 
+        <router-link to="/solicitare">Solicita Oferta</router-link> 
       </nav>
     </header>
     <main>
@@ -96,7 +96,6 @@ let isScrolled = ref(false);
 
 onMounted(async () => {
   await store.getOffers();
-  console.log(store.offers);
   if (store.showLoader === true) {
     document.querySelector("body").style.overflow = "hidden";
   }
@@ -145,7 +144,7 @@ header {
     padding-bottom: 0.25rem;
     margin-top: 0.3rem;
   }
-  a:hover {
+  a:hover{
     color: #fff;
     border-bottom: 1px solid #fff;
   }
