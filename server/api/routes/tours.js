@@ -41,7 +41,7 @@ router.put("/tours/:id", checkJWTToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { title, description, price, location, departure, arrival, img, country, duration, available, rating, type } = req.body;
-        await process.postgresql.query(`UPDATE lt_tours SET title = $1, descripiton = $2, price = $3, location = $4, arrival = $5, img = $6, country = $7, duration = $8, available = $9, rating = $10, type = $11 WHERE id = $12`, [title, description, price, location, departure, arrival, img, country, duration, available, rating, type, id]);
+        await process.postgresql.query(`UPDATE lt_tours SET title = $1, description = $2, price = $3, location = $4, departure = $5, arrival = $6, img = $7, country = $8, duration = $9, available = $10, rating = $11, type = $12 WHERE id = $13`, [title, description, price, location, departure, arrival, img, country, duration, available, rating, type, id]);
         res.status(200).json({
             message: 'Tour updated'
         })
