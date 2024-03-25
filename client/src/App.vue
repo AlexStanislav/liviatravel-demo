@@ -94,13 +94,12 @@ const store = useAppStore();
 let logoURL = new URL("./assets/img/logo.svg", import.meta.url);
 let isScrolled = ref(false);
 
-onMounted(() => {
-  setTimeout(async () => {
-    await store.getOffers();
-    if (store.showLoader === true) {
-      document.querySelector("body").style.overflow = "hidden";
-    }
-  }, 300);
+onMounted(async () => {
+  await store.getOffers();
+  console.log(store.offers);
+  if (store.showLoader === true) {
+    document.querySelector("body").style.overflow = "hidden";
+  }
 });
 </script>
 <style lang="scss">

@@ -382,7 +382,22 @@ const saveOffer = (e) => {
       createOfferVisible.value = false;
       isEditingOffer.value = false;
       getOffers();
-    });
+    }).then(() => {
+      let formData = new FormData();
+      formData.append("offerImage", imageFile.value);
+      axios
+        .post(`${url}/imageOffers`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        }).then((res) => {
+          if (res.status === 200) {
+            console.log("Success");
+          }
+        }).catch((err) => {
+          console.log(err);
+        })
+    })
   } else {
     offer.img = `${url}/images/${imageFile.value.name}`;
     axios

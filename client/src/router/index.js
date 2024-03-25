@@ -34,16 +34,21 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-    if(to.hash === ""){
-        const appStore = useAppStore()
+    const appStore = useAppStore();
+    if (to.path === "/oferte" || to.path === "/contact" || to.path === "/solicitare") {
         appStore.togglePreloader(true);
-        window.scrollTo({ top: 0 })
-        next()
         setTimeout(() => {
             appStore.togglePreloader(false);
-        }, 1000)
-    }else{
+        }, 1000);
         next()
+    } else {
+        if (to.hash === "") {
+            appStore.togglePreloader(true);
+            window.scrollTo({ top: 0 })
+            next()
+        } else {
+            next()
+        }
     }
 })
 

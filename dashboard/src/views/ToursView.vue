@@ -291,7 +291,24 @@ const saveTour = (e) => {
       createTourVisible.value = false;
       isEditingTour.value = false;
       getTours();
-    });
+    }).then(() => {
+      let formData = new FormData();
+      formData.append("offerImage", imageFile.value);
+      axios
+        .post(`${url}/imageOffers`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log("Success");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+    })
   } else {
     newTour.value.img = `${url}/images/${imageFile.value.name}`;
     axios
