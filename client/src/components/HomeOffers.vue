@@ -73,7 +73,7 @@ onMounted(() => {
     }
     offers.value = latestOffers();
     tours.value = latestTours();
-  }, 300);
+  }, 500);
 });
 
 const latestOffers = () => {
