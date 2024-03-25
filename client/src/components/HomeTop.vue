@@ -33,7 +33,7 @@ const store = useAppStore();
 watchEffect(() => {
   setTimeout(() => {
     carouselOffers.value = store.offers.slice(0, 3);
-  }, 500);
+  }, 300);
 });
 
 function showOffer(offer) {

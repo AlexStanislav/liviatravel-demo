@@ -46,17 +46,20 @@ export const useAppStore = defineStore('app', {
             this.appReady = value !== undefined ? value : !this.appReady
         },
         getOffers() {
-            this.offers = []
-            this.tours = []
-            axios.get(`${this.url}/offers`).then(res => {
-                this.offers.push(...res.data.offers)
-                this.offers = [...new Set(this.offers)]
-            }).then(() => {
-                axios.get(`${this.url}/api/tours`).then(res => {
-                    this.tours.push(...res.data)
-                    this.tours = [...new Set(this.tours)]
+            try {
+                axios.get(`${this.url}/offers`).then(res => {
+                    this.offers.push(...res.data.offers)
+                    this.offers = [...new Set(this.offers)]
+                }).then(() => {
+                    axios.get(`${this.url}/api/tours`).then(res => {
+                        console.log(res.data)
+                        this.tours.push(...res.data)
+                        this.tours = [...new Set(this.tours)]
+                    })
                 })
-            })
+            } catch (error) {
+                console.log(error)
+            }
         },
         setSearchParams(params) {
             this.searchParams = params
